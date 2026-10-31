@@ -58,6 +58,10 @@ Laporan, Setting, harus enak dilihat di kedua orientasi. Cek lebar layar pakai `
 | `EmptyState` | Tampilan saat data kosong |
 | `QueryState` | Tampilan loading / gagal memuat |
 | `PinPad` | Tombol PIN |
+| `OwnerPinModal` | Popup minta PIN owner untuk aksi 🔒 di mode Kasir |
+| `GridList` | Daftar kartu yang otomatis jadi beberapa kolom di layar lebar |
+| `HeaderAction` | Tombol kecil di kanan judul halaman (misal "+ Menu") |
+| `MenuThumb` | Foto menu, atau kotak inisial kalau belum ada foto |
 
 **Fungsi bantu** (`src/lib/`)
 
@@ -71,6 +75,9 @@ Laporan, Setting, harus enak dilihat di kedua orientasi. Cek lebar layar pakai `
 | `errorMessage(error)` | Pesan error yang bisa dibaca kasir |
 
 **Data** (`src/hooks/`): `useStoreSettings`, `useUpdateStoreSettings`, `useCategories`, `useMenuItems`.
+
+**Realtime**: perubahan menu, kategori, varian/topping, dan stok dari device lain otomatis ter-update di semua
+halaman (dipasang sekali di `src/app/_layout.tsx` lewat `useMenuRealtime`). Halaman fitur tidak perlu memasang sendiri.
 
 **Label** (`src/constants/labels.ts`): `PAYMENT_METHOD_LABEL.cash` → `"Tunai"`, dan lainnya.
 

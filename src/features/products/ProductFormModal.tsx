@@ -12,7 +12,7 @@ import { formatRupiah } from "@/lib/format";
 import { pickImage } from "@/lib/images";
 import type { Category, MenuItem, MenuItemWithOptions } from "@/types/database";
 import { MAX_AMOUNT, digitsOnly, parseAmount } from "./amount";
-import { MenuThumb } from "./MenuThumb";
+import { MenuThumb } from "@/components/MenuThumb";
 import { useArchiveMenuItem, useSaveMenuItem } from "./useProducts";
 
 /**

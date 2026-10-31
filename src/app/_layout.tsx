@@ -10,6 +10,7 @@ import {
   DMSans_500Medium,
   DMSans_700Bold,
 } from "@expo-google-fonts/dm-sans";
+import { useMenuRealtime } from "@/hooks/useMenuRealtime";
 import { queryClient } from "@/lib/queryClient";
 import { useSession } from "@/store/session";
 
@@ -35,8 +36,16 @@ export default function RootLayout() {
 
   return (
     <QueryClientProvider client={queryClient}>
+      <LiveData />
       <StatusBar style="dark" />
       <Stack screenOptions={{ headerShown: false, animation: "fade" }} />
     </QueryClientProvider>
   );
+}
+
+/** Langganan realtime yang berlaku di seluruh app (setelah login). */
+function LiveData() {
+  const signedIn = useSession((s) => s.status === "signedIn");
+  useMenuRealtime(signedIn);
+  return null;
 }

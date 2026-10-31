@@ -1,115 +1,136 @@
-import React from 'react';
-import { View, Text, ScrollView, TouchableOpacity } from 'react-native';
-import { Package, Receipt, Users, Clock, ChevronRight } from 'lucide-react-native';
-import { useRouter } from 'expo-router';
+import { useMemo } from "react";
+import { Pressable, RefreshControl, ScrollView, View } from "react-native";
+import { router, type Href } from "expo-router";
+import { ChevronRight, Package, ReceiptText, Users, Wallet, type LucideIcon } from "lucide-react-native";
+import { AppText } from "@/components/AppText";
+import { QueryState } from "@/components/QueryState";
+import { colors } from "@/constants/colors";
+import { useReportData } from "@/hooks/useReportData";
+import { formatDate, formatRupiah, formatTime } from "@/lib/format";
+import { periodRange, todayPeriod } from "@/lib/period";
+import { buildReport } from "@/lib/report";
+import { orderTypeText } from "@/features/orders/orderLabels";
+import { KpiCard } from "@/features/reports/KpiCard";
 
+const SHORTCUTS: { label: string; href: Href; icon: LucideIcon; tint: string; color: string }[] = [
+  { label: "Stok", href: "/owner/stock", icon: Package, tint: "bg-brand-soft", color: colors.brand },
+  { label: "Pengeluaran", href: "/owner/expenses", icon: Wallet, tint: "bg-action-soft", color: colors.action },
+  { label: "Member", href: "/owner/members", icon: Users, tint: "bg-success/10", color: colors.success },
+];
+
+/**
+ * Dashboard Owner: ringkasan hari ini, akses cepat, order terbaru (realtime + cekring).
+ * Desain awal: Fahri. Realtime & cekring dipasang di layout Owner (useOwnerOrderAlerts).
+ */
 export default function DashboardScreen() {
-  const router = useRouter();
-  
-  // Dummy data ringkasan hari ini
-  const ringkasan = { omzet: 1250000, transaksi: 45, laba: 850000 };
-  
-  // Dummy data order realtime
-  const recentOrders = [
-    { id: 'TP-261031-045', tipe: 'Dine-in (Meja 4)', total: 75000, waktu: '20:15', status: 'Lunas' },
-    { id: 'TP-261031-044', tipe: 'Takeaway', total: 45000, waktu: '20:05', status: 'Lunas' },
-    { id: 'TP-261031-043', tipe: 'Ojol (GoFood)', total: 115000, waktu: '19:50', status: 'Lunas' },
-  ];
+  const range = periodRange(todayPeriod());
+  const query = useReportData(range);
 
-  const formatRupiah = (angka: number) => `Rp${angka.toLocaleString('id-ID')}`;
+  const report = useMemo(
+    () => (query.data ? buildReport(query.data.orders, query.data.expenses, "today", range) : null),
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    [query.data, range.from],
+  );
+  const recent = (query.data?.orders ?? []).slice(0, 8);
 
   return (
-    <ScrollView className="flex-1 bg-gray-50 p-4">
-      
-      {/* 1. Ringkasan Hari Ini */}
-      <View className="mb-6">
-        <Text className="text-lg font-bold text-gray-800 mb-3">Ringkasan Hari Ini</Text>
-        <View className="flex-row flex-wrap justify-between">
-          <View className="bg-white p-4 rounded-2xl w-[48%] mb-4 shadow-sm border border-gray-100">
-            <Text className="text-gray-500 text-sm mb-1">Omzet</Text>
-            <Text className="text-xl font-bold text-blue-600">{formatRupiah(ringkasan.omzet)}</Text>
+    <ScrollView
+      className="flex-1 bg-panel"
+      contentContainerStyle={{ padding: 16, gap: 20 }}
+      refreshControl={<RefreshControl refreshing={query.isRefetching} onRefresh={() => void query.refetch()} />}
+    >
+      {/* 1. Ringkasan hari ini */}
+      <View>
+        <AppText variant="heading" className="text-lg">
+          Ringkasan Hari Ini
+        </AppText>
+        <AppText variant="muted" className="mb-3 text-xs">
+          {formatDate(new Date())}
+        </AppText>
+        {query.isLoading || query.error || !report ? (
+          <View className="h-40">
+            <QueryState query={query} />
           </View>
-          <View className="bg-white p-4 rounded-2xl w-[48%] mb-4 shadow-sm border border-gray-100">
-            <Text className="text-gray-500 text-sm mb-1">Jml Order</Text>
-            <Text className="text-xl font-bold text-gray-800">{ringkasan.transaksi}</Text>
+        ) : (
+          <View className="gap-3">
+            <View className="flex-row gap-3">
+              <KpiCard style={{ flex: 1 }} label="Omzet" value={formatRupiah(report.omzet)} tone="brand" />
+              <KpiCard style={{ flex: 1 }} label="Jumlah Order" value={String(report.transactions)} />
+            </View>
+            <KpiCard
+              label="Laba Sederhana"
+              value={formatRupiah(report.profit)}
+              tone={report.profit >= 0 ? "good" : "bad"}
+              hint={`HPP ${formatRupiah(report.hpp)} · Pengeluaran ${formatRupiah(report.expenses)}`}
+            />
           </View>
-          <View className="bg-white p-4 rounded-2xl w-full shadow-sm border border-gray-100">
-            <Text className="text-gray-500 text-sm mb-1">Estimasi Laba</Text>
-            <Text className="text-xl font-bold text-green-600">{formatRupiah(ringkasan.laba)}</Text>
-          </View>
-        </View>
+        )}
       </View>
 
-      {/* 2. Grid Shortcut (Akses Cepat) */}
-      <View className="mb-8">
-        <Text className="text-lg font-bold text-gray-800 mb-3">Akses Cepat</Text>
-        <View className="flex-row justify-between bg-white p-4 rounded-2xl shadow-sm border border-gray-100">
-          
-          <TouchableOpacity 
-            className="items-center w-1/3"
-            onPress={() => router.push('/owner/stock')}
-          >
-            <View className="bg-blue-100 p-3 rounded-full mb-2">
-              <Package size={28} color="#1A4FE8" />
-            </View>
-            <Text className="text-sm font-medium text-gray-700">Stok</Text>
-          </TouchableOpacity>
-          
-          <TouchableOpacity 
-            className="items-center w-1/3"
-            onPress={() => router.push('/owner/expenses')}
-          >
-            <View className="bg-red-100 p-3 rounded-full mb-2">
-              <Receipt size={28} color="#EE2A24" />
-            </View>
-            <Text className="text-sm font-medium text-gray-700">Pengeluaran</Text>
-          </TouchableOpacity>
-          
-          <TouchableOpacity 
-            className="items-center w-1/3"
-            onPress={() => router.push('/owner/members')}
-          >
-            <View className="bg-green-100 p-3 rounded-full mb-2">
-              <Users size={28} color="#10B981" />
-            </View>
-            <Text className="text-sm font-medium text-gray-700">Member</Text>
-          </TouchableOpacity>
-          
-        </View>
-      </View>
-
-      {/* 3. Order Masuk Realtime */}
-      <View className="mb-6">
-        <View className="flex-row justify-between items-center mb-3">
-          <Text className="text-lg font-bold text-gray-800">Order Terbaru</Text>
-          <TouchableOpacity onPress={() => router.push('/owner/orders')}>
-            <Text className="text-blue-600 font-medium">Lihat Semua</Text>
-          </TouchableOpacity>
-        </View>
-        
-        {recentOrders.map((order, index) => (
-          <TouchableOpacity 
-            key={index} 
-            className="flex-row justify-between items-center bg-white p-4 rounded-2xl mb-3 shadow-sm border border-gray-100"
-            onPress={() => router.push('/owner/orders')}
-          >
-            <View className="flex-row items-center">
-              <View className="bg-gray-100 p-2 rounded-full mr-3">
-                <Clock size={20} color="#6B7280" />
+      {/* 2. Akses cepat */}
+      <View>
+        <AppText variant="heading" className="mb-3 text-lg">
+          Akses Cepat
+        </AppText>
+        <View className="flex-row rounded-3xl border border-line bg-white p-3">
+          {SHORTCUTS.map(({ label, href, icon: Icon, tint, color }) => (
+            <Pressable key={label} onPress={() => router.push(href)} className="flex-1 items-center gap-2 rounded-2xl py-2 active:bg-panel">
+              <View className={`h-14 w-14 items-center justify-center rounded-full ${tint}`}>
+                <Icon size={26} color={color} />
               </View>
-              <View>
-                <Text className="font-bold text-gray-800">{order.id}</Text>
-                <Text className="text-sm text-gray-500">{order.waktu} • {order.tipe}</Text>
-              </View>
-            </View>
-            <View className="items-end">
-              <Text className="font-bold text-blue-600">{formatRupiah(order.total)}</Text>
-              <ChevronRight size={20} color="#9CA3AF" />
-            </View>
-          </TouchableOpacity>
-        ))}
+              <AppText className="text-sm">{label}</AppText>
+            </Pressable>
+          ))}
+        </View>
       </View>
 
+      {/* 3. Order terbaru (otomatis ter-update saat ada order baru) */}
+      <View>
+        <View className="mb-3 flex-row items-center justify-between">
+          <AppText variant="heading" className="text-lg">
+            Order Terbaru
+          </AppText>
+          <Pressable onPress={() => router.push("/owner/orders")} hitSlop={8}>
+            <AppText className="text-sm text-brand">Lihat semua</AppText>
+          </Pressable>
+        </View>
+        {recent.length === 0 && !query.isLoading ? (
+          <View className="items-center gap-2 rounded-3xl border border-line bg-white py-8">
+            <ReceiptText size={26} color={colors.inkMuted} />
+            <AppText variant="muted">Belum ada order hari ini</AppText>
+          </View>
+        ) : (
+          <View className="overflow-hidden rounded-3xl border border-line bg-white">
+            {recent.map((o, i) => {
+              const cancelled = o.status === "cancelled";
+              return (
+                <Pressable
+                  key={o.id}
+                  onPress={() => router.push("/owner/orders")}
+                  className={`flex-row items-center gap-3 px-4 py-3 active:bg-panel ${i > 0 ? "border-t border-line" : ""}`}
+                >
+                  <AppText variant="heading" className="w-12 text-sm">
+                    {formatTime(o.created_at)}
+                  </AppText>
+                  <View className="flex-1">
+                    <AppText variant="heading" className={`text-sm ${cancelled ? "text-ink-muted line-through" : ""}`}>
+                      {o.order_number}
+                    </AppText>
+                    <AppText variant="muted" numberOfLines={1} className="text-xs">
+                      {cancelled ? "Dibatalkan · " : ""}
+                      {orderTypeText(o)}
+                    </AppText>
+                  </View>
+                  <AppText variant="heading" className={`text-sm ${cancelled ? "text-ink-muted line-through" : ""}`}>
+                    {formatRupiah(o.total)}
+                  </AppText>
+                  <ChevronRight size={16} color={colors.inkMuted} />
+                </Pressable>
+              );
+            })}
+          </View>
+        )}
+      </View>
     </ScrollView>
   );
 }

@@ -5,6 +5,7 @@ import { LogOut } from "lucide-react-native";
 import { AppText } from "@/components/AppText";
 import { OwnerTabBar } from "@/components/OwnerTabBar";
 import { colors } from "@/constants/colors";
+import { useOwnerOrderAlerts } from "@/hooks/useOwnerOrderAlerts";
 import { useOrientation } from "@/lib/orientation";
 import { useSession } from "@/store/session";
 
@@ -15,6 +16,9 @@ export default function OwnerLayout() {
   const mode = useSession((s) => s.mode);
   const storeName = useSession((s) => s.storeName);
   const setMode = useSession((s) => s.setMode);
+
+  // Bunyi cekring + update data saat ada order baru (hanya saat sudah masuk mode Owner)
+  useOwnerOrderAlerts(status === "signedIn" && mode === "owner");
 
   // Hanya boleh masuk lewat PIN
   if (status !== "signedIn") return <Redirect href="/" />;

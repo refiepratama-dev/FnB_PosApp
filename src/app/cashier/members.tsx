@@ -1,6 +1,2 @@
-import { Users } from "lucide-react-native";
-import { ScreenPlaceholder } from "@/components/ScreenPlaceholder";
-
-export default function Screen() {
-  return <ScreenPlaceholder title="Member" icon={Users} />;
-}
+// Halaman ini hanya meneruskan ke fitur. Kerjakan isinya di src/features/members/MembersScreen
+export { default } from "@/features/members/MembersScreen";

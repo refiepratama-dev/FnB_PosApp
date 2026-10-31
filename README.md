@@ -34,22 +34,29 @@ Kalau tidak tersambung, coba `npx expo start --tunnel`.
 | `npx expo start` | Jalankan app |
 | `npx expo start -c` | Jalankan app + hapus cache (kalau tampilan aneh) |
 | `npm run typecheck` | Cek error TypeScript sebelum bikin PR |
+| `npm test` | Jalankan unit test (hitung harga, periode) |
 | `npx expo install <nama-library>` | Tambah library (jangan pakai `npm install` biasa) |
 
 ## Struktur folder
 
 ```
 src/
-  app/            Halaman (setiap file = 1 layar, aturan Expo Router)
-    start.tsx     Layar Awal (pilih Kasir / Owner)
-    pin.tsx       Masukkan PIN owner
-    cashier/      Mode Kasir (landscape, sidebar kiri)
-    owner/        Mode Owner (portrait, navbar bawah)
-  components/     Komponen yang dipakai ulang (AppText, Button, dll)
-  constants/      Warna, dll
-  lib/            Fungsi bantuan (orientasi, supabase, dll)
+  app/            Rute halaman (aturan Expo Router). Hanya meneruskan ke features/
+  features/       Isi halaman per fitur. Tiap orang pegang foldernya sendiri
+  components/     Komponen bersama (AppText, Button, AppModal, PeriodFilter, dll)
+  hooks/          Ambil data bersama (useMenuItems, useStoreSettings, dll)
+  lib/            Fungsi bantu (supabase, hitung harga, format rupiah, upload foto)
+  store/          State app (sesi login, mode Owner/Kasir)
+  types/          Bentuk data tabel database
+  constants/      Warna & label
+supabase/
+  migrations/     Struktur database (hanya diubah Refie)
+  seed.sql        Data contoh menu (development)
+  seed-orders.sql Data contoh order 30 hari (development)
 docs/             Dokumen requirement & panduan
 ```
+
+Panduan lengkap & contoh kode: [`docs/CODING-GUIDE.md`](docs/CODING-GUIDE.md).
 
 ## Aturan coding singkat
 

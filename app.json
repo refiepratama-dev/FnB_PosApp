@@ -28,7 +28,15 @@
     "plugins": [
       "expo-router",
       "expo-font",
-      "expo-screen-orientation"
+      "expo-screen-orientation",
+      [
+        "expo-camera",
+        {
+          "cameraPermission": "TemanPOS memakai kamera untuk scan QR toko.",
+          "microphonePermission": false,
+          "recordAudioAndroid": false
+        }
+      ]
     ]
   }
 }

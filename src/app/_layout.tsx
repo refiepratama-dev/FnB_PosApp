@@ -9,17 +9,27 @@ import {
   DMSans_500Medium,
   DMSans_700Bold,
 } from "@expo-google-fonts/dm-sans";
+import { useSession } from "@/store/session";
 
 SplashScreen.preventAutoHideAsync();
 
 export default function RootLayout() {
   const [fontsLoaded] = useFonts({ DMSans_400Regular, DMSans_500Medium, DMSans_700Bold });
+  const status = useSession((s) => s.status);
+  const init = useSession((s) => s.init);
+
+  // Cek koneksi toko & sesi login yang tersimpan di device
+  useEffect(() => {
+    init();
+  }, [init]);
+
+  const ready = fontsLoaded && status !== "loading";
 
   useEffect(() => {
-    if (fontsLoaded) SplashScreen.hideAsync();
-  }, [fontsLoaded]);
+    if (ready) SplashScreen.hideAsync();
+  }, [ready]);
 
-  if (!fontsLoaded) return null;
+  if (!ready) return null;
 
   return (
     <>

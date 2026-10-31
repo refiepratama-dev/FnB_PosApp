@@ -1,6 +1,5 @@
-import { Settings } from "lucide-react-native";
-import { ScreenPlaceholder } from "@/components/ScreenPlaceholder";
+import { SettingsList } from "@/components/SettingsList";
 
-export default function Screen() {
-  return <ScreenPlaceholder title="Setting" icon={Settings} />;
+export default function SettingsScreen() {
+  return <SettingsList />;
 }

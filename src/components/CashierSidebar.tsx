@@ -15,6 +15,7 @@ import {
 } from "lucide-react-native";
 import { AppText } from "./AppText";
 import { colors } from "@/constants/colors";
+import { useSession } from "@/store/session";
 
 type Item = { label: string; href: Href; icon: LucideIcon };
 
@@ -61,6 +62,12 @@ function SidebarButton({
 /** Sidebar kiri mode Kasir. Menempel ke tepi, dipisah garis tipis (tanpa celah). */
 export function CashierSidebar() {
   const pathname = usePathname();
+  const setMode = useSession((s) => s.setMode);
+
+  async function exit() {
+    await setMode(null);
+    router.replace("/start");
+  }
 
   return (
     <SafeAreaView edges={["top", "bottom", "left"]} className="w-48 border-r border-line bg-white">
@@ -79,7 +86,7 @@ export function CashierSidebar() {
 
       <View className="gap-1 border-t border-line px-3 py-3">
         <SidebarButton label="Masuk Owner" icon={ShieldCheck} onPress={() => router.push("/pin")} />
-        <SidebarButton label="Keluar" icon={LogOut} onPress={() => router.replace("/start")} />
+        <SidebarButton label="Keluar" icon={LogOut} onPress={exit} />
       </View>
     </SafeAreaView>
   );

@@ -6,8 +6,8 @@ import { PIN_LENGTH, PinPad } from "@/components/PinPad";
 import { getSupabase } from "@/lib/supabase";
 
 /**
- * Minta PIN owner (dicek ke database). Dipakai untuk aksi 🔒 di mode Kasir,
- * misalnya menghapus member (docs/02-USERS-ROLES.md bagian D).
+ * Minta PIN owner (dicek ke database). Dipakai untuk aksi 🔒 di mode Kasir:
+ * hapus member, buka Kelola Produk / Ubah PIN / QR toko di Setting (docs/02-USERS-ROLES.md bagian D).
  */
 export function OwnerPinModal({
   visible,

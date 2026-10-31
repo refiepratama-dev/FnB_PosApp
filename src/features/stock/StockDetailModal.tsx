@@ -7,7 +7,7 @@ import { Button } from "@/components/Button";
 import { Chip } from "@/components/Chip";
 import { TextField } from "@/components/TextField";
 import { colors } from "@/constants/colors";
-import { MenuThumb } from "@/features/products/MenuThumb";
+import { MenuThumb } from "@/components/MenuThumb";
 import { errorMessage } from "@/lib/errors";
 import type { MenuItem } from "@/types/database";
 import { MovementRow } from "./MovementRow";

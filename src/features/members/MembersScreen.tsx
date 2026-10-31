@@ -7,15 +7,15 @@ import { QueryState } from "@/components/QueryState";
 import { ScreenHeader } from "@/components/ScreenHeader";
 import { SearchInput } from "@/components/SearchInput";
 import { colors } from "@/constants/colors";
-import { GridList } from "@/features/products/GridList";
-import { HeaderAction } from "@/features/products/HeaderAction";
+import { GridList } from "@/components/GridList";
+import { HeaderAction } from "@/components/HeaderAction";
 import { errorMessage } from "@/lib/errors";
 import { useSession } from "@/store/session";
 import type { Member } from "@/types/database";
 import { Avatar } from "./Avatar";
 import { MemberDetailModal } from "./MemberDetailModal";
 import { MemberFormModal } from "./MemberFormModal";
-import { OwnerPinModal } from "./OwnerPinModal";
+import { OwnerPinModal } from "@/components/OwnerPinModal";
 import { useDeleteMember, useMembers } from "./useMembers";
 
 function MemberCard({ member, onPress }: { member: Member; onPress: () => void }) {

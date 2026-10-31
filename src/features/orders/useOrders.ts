@@ -13,7 +13,7 @@ export function useOrders(range: DateRange) {
   useEffect(() => {
     const supabase = getSupabase();
     const channel = supabase
-      .channel("orders-list")
+      .channel(`orders-list-${Math.random().toString(36).slice(2)}`) // nama unik supaya tidak bentrok dengan halaman lain
       .on("postgres_changes", { event: "*", schema: "public", table: "orders" }, () => {
         queryClient.invalidateQueries({ queryKey: queryKeys.orders });
       })

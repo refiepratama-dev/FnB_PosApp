@@ -1,0 +1,5 @@
+# Samakan akhir baris di semua laptop (hilangkan warning LF/CRLF)
+* text=auto eol=lf
+*.png binary
+*.jpg binary
+*.ttf binary

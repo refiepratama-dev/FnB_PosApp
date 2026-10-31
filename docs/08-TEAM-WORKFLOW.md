@@ -5,7 +5,7 @@
 |------|--------|-------|
 | Refie | refiepratama-dev | Author / Owner repo, reviewer & satu-satunya yang merge |
 | Ridho | Oxura2727 | Contributor |
-| Fahri | (menyusul) | Contributor |
+| Fahri | FariOtherSide | Contributor |
 
 Ridho & Fahri masih pemula → struktur project, panduan, dan pembagian tugas dibuat sejelas mungkin.
 

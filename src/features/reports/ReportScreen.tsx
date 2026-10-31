@@ -1,165 +1,163 @@
-import React, { useState } from 'react';
-import { View, Text, ScrollView, TouchableOpacity, Dimensions } from 'react-native';
-// Pastikan kamu menginstal library grafik: npm install react-native-chart-kit
-import { BarChart } from 'react-native-chart-kit';
+import { useMemo, useState } from "react";
+import { RefreshControl, ScrollView, View } from "react-native";
+import { AppText } from "@/components/AppText";
+import { PeriodFilter } from "@/components/PeriodFilter";
+import { QueryState } from "@/components/QueryState";
+import { ScreenHeader } from "@/components/ScreenHeader";
+import { OJOL_PROVIDER_LABEL, ORDER_TYPE_LABEL, PAYMENT_METHOD_LABEL } from "@/constants/labels";
+import { useReportData } from "@/hooks/useReportData";
+import { formatRupiah } from "@/lib/format";
+import { periodRange, todayPeriod } from "@/lib/period";
+import { buildReport, type OrderTypeKey } from "@/lib/report";
+import type { PaymentMethod } from "@/types/database";
+import { BarChart } from "./BarChart";
+import { KpiCard } from "./KpiCard";
+import { ShareList } from "./ShareList";
 
-export default function ReportsScreen() {
-  const [periode, setPeriode] = useState('Hari Ini');
-  const tabs = ['Hari Ini', 'Tanggal', 'Minggu', 'Bulan'];
-  const screenWidth = Dimensions.get('window').width - 32; // Margin kiri-kanan 16px
+const TYPE_LABEL: Record<OrderTypeKey, string> = {
+  dine_in: ORDER_TYPE_LABEL.dine_in,
+  takeaway: ORDER_TYPE_LABEL.takeaway,
+  ...OJOL_PROVIDER_LABEL,
+};
 
-  // Data Dummy untuk KPI
-  const kpiData = { omzet: 1250000, transaksi: 45, rataRata: 27777, laba: 850000 };
+/** "1,2 jt" untuk label singkat di grafik */
+function shortRupiah(value: number) {
+  if (value >= 1_000_000) return `Rp${(value / 1_000_000).toLocaleString("id-ID", { maximumFractionDigits: 1 })} jt`;
+  if (value >= 1_000) return `Rp${Math.round(value / 1_000)} rb`;
+  return `Rp${value}`;
+}
 
-  // Data Dummy untuk Grafik Penjualan (Harian)
-  const salesData = {
-    labels: ['Sen', 'Sel', 'Rab', 'Kam', 'Jum', 'Sab', 'Min'],
-    datasets: [{ data: [1.2, 1.5, 1.1, 1.8, 2.5, 3.2, 2.8] }], // dalam Juta
-  };
+function Section({ title, children, style }: { title: string; children: React.ReactNode; style?: object }) {
+  return (
+    <View style={style} className="rounded-3xl border border-line bg-white p-4">
+      <AppText variant="heading" className="mb-3 text-base">
+        {title}
+      </AppText>
+      {children}
+    </View>
+  );
+}
 
-  // Data Dummy untuk Jam Ramai
-  const peakHoursData = {
-    labels: ['10', '12', '14', '16', '18', '20', '22'],
-    datasets: [{ data: [5, 15, 8, 12, 25, 30, 10] }], // jumlah order
-  };
+/**
+ * Laporan / Report (sama untuk Owner portrait & Kasir landscape).
+ * Desain awal: Fahri. Data asli dari Supabase, hitungan di src/lib/report.ts.
+ */
+export default function ReportScreen() {
+  const [period, setPeriod] = useState(todayPeriod());
+  const [width, setWidth] = useState(0);
+  const range = periodRange(period);
+  const query = useReportData(range);
 
-  // Data Dummy untuk Menu Terlaris
-  const topMenus = [
-    { nama: 'Tenderloin Steak', terjual: 42, total: 100 },
-    { nama: 'Sirloin Steak', terjual: 38, total: 100 },
-    { nama: 'Chicken Steak', terjual: 25, total: 100 },
-    { nama: 'Ice Lemon Tea', terjual: 60, total: 100 },
-    { nama: 'French Fries', terjual: 30, total: 100 },
-  ];
+  const report = useMemo(
+    () => (query.data ? buildReport(query.data.orders, query.data.expenses, period.type, range) : null),
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    [query.data, period.type, range.from, range.to],
+  );
 
-  // Data Dummy untuk Metode Pembayaran
-  const paymentMethods = [
-    { metode: 'QRIS', persen: 55, warna: 'bg-blue-500' },
-    { metode: 'Tunai', persen: 30, warna: 'bg-green-500' },
-    { metode: 'Transfer', persen: 15, warna: 'bg-orange-500' },
-  ];
-
-  const formatRupiah = (angka: number) => `Rp${angka.toLocaleString('id-ID')}`;
-
-  const chartConfig = {
-    backgroundGradientFrom: '#ffffff',
-    backgroundGradientTo: '#ffffff',
-    color: (opacity = 1) => `rgba(26, 79, 232, ${opacity})`, // Warna Biru TemanPOS
-    labelColor: (opacity = 1) => `rgba(107, 114, 128, ${opacity})`, // Gray-500
-    barPercentage: 0.5,
-    decimalPlaces: 1,
-  };
+  const wide = width >= 860; // tablet landscape: 2 kolom
+  const kpiCols = width >= 700 ? 3 : 2;
+  const gap = 12;
+  const kpiWidth = width ? (width - 32 - gap * (kpiCols - 1)) / kpiCols : undefined;
+  const half = width ? (width - 32 - gap) / 2 : undefined;
+  const isHourly = period.type === "today" || period.type === "date";
 
   return (
-    <ScrollView className="flex-1 bg-gray-50 p-4">
-      {/* 1. Filter Periode */}
-      <View className="flex-row bg-white rounded-full p-1 mb-6 shadow-sm">
-        {tabs.map((tab) => (
-          <TouchableOpacity
-            key={tab}
-            onPress={() => setPeriode(tab)}
-            className={`flex-1 py-2 rounded-full items-center ${
-              periode === tab ? 'bg-blue-600' : 'bg-transparent'
-            }`}
-          >
-            <Text className={`font-medium ${periode === tab ? 'text-white' : 'text-gray-500'}`}>
-              {tab}
-            </Text>
-          </TouchableOpacity>
-        ))}
-      </View>
-
-      {/* 2. Kartu Angka (KPI) */}
-      <Text className="text-lg font-bold text-gray-800 mb-3">Ringkasan {periode}</Text>
-      <View className="flex-row flex-wrap justify-between mb-6">
-        <View className="bg-white p-4 rounded-2xl w-[48%] mb-4 shadow-sm border border-gray-100">
-          <Text className="text-gray-500 text-sm mb-1">Omzet</Text>
-          <Text className="text-xl font-bold text-blue-600">{formatRupiah(kpiData.omzet)}</Text>
+    <View className="flex-1 bg-panel" onLayout={(e) => setWidth(e.nativeEvent.layout.width)}>
+      <ScreenHeader title="Laporan" />
+      <ScrollView
+        contentContainerStyle={{ padding: 16, gap }}
+        refreshControl={<RefreshControl refreshing={query.isRefetching} onRefresh={() => void query.refetch()} />}
+      >
+        <View className="rounded-3xl border border-line bg-white p-4">
+          <PeriodFilter value={period} onChange={setPeriod} />
         </View>
-        <View className="bg-white p-4 rounded-2xl w-[48%] mb-4 shadow-sm border border-gray-100">
-          <Text className="text-gray-500 text-sm mb-1">Jml Transaksi</Text>
-          <Text className="text-xl font-bold text-gray-800">{kpiData.transaksi}</Text>
-        </View>
-        <View className="bg-white p-4 rounded-2xl w-[48%] mb-4 shadow-sm border border-gray-100">
-          <Text className="text-gray-500 text-sm mb-1">Laba Sederhana</Text>
-          <Text className="text-xl font-bold text-green-600">{formatRupiah(kpiData.laba)}</Text>
-        </View>
-        <View className="bg-white p-4 rounded-2xl w-[48%] mb-4 shadow-sm border border-gray-100">
-          <Text className="text-gray-500 text-sm mb-1">Rata-rata/Order</Text>
-          <Text className="text-xl font-bold text-gray-800">{formatRupiah(kpiData.rataRata)}</Text>
-        </View>
-      </View>
 
-      {/* 3. Grafik Penjualan */}
-      <View className="bg-white p-4 rounded-2xl mb-6 shadow-sm border border-gray-100">
-        <Text className="text-base font-bold text-gray-800 mb-4">Penjualan (Juta Rp)</Text>
-        <BarChart
-          data={salesData}
-          width={screenWidth}
-          height={220}
-          yAxisLabel=""
-          yAxisSuffix=""
-          chartConfig={chartConfig}
-          verticalLabelRotation={0}
-          fromZero
-          style={{ borderRadius: 16 }}
-        />
-      </View>
-
-      {/* 4. Grafik Jam Ramai */}
-      <View className="bg-white p-4 rounded-2xl mb-6 shadow-sm border border-gray-100">
-        <Text className="text-base font-bold text-gray-800 mb-4">Jam Ramai (Jml Order)</Text>
-        <BarChart
-          data={peakHoursData}
-          width={screenWidth}
-          height={220}
-          yAxisLabel=""
-          yAxisSuffix=""
-          chartConfig={{ ...chartConfig, color: (opacity = 1) => `rgba(238, 42, 36, ${opacity})` }} // Warna Merah TemanPOS
-          verticalLabelRotation={0}
-          fromZero
-          style={{ borderRadius: 16 }}
-        />
-      </View>
-
-      {/* 5. Menu Terlaris (Ranking Bar) */}
-      <View className="bg-white p-4 rounded-2xl mb-6 shadow-sm border border-gray-100">
-        <Text className="text-base font-bold text-gray-800 mb-4">Menu Terlaris</Text>
-        {topMenus.map((item, index) => (
-          <View key={index} className="mb-3">
-            <View className="flex-row justify-between mb-1">
-              <Text className="text-gray-700">{item.nama}</Text>
-              <Text className="text-gray-500 font-medium">{item.terjual} porsi</Text>
-            </View>
-            <View className="w-full bg-gray-100 h-2 rounded-full overflow-hidden">
-              <View
-                className="bg-blue-500 h-full rounded-full"
-                style={{ width: `${(item.terjual / item.total) * 100}%` }}
+        {query.isLoading || query.error || !report ? (
+          <View className="h-64">
+            <QueryState query={query} />
+          </View>
+        ) : (
+          <>
+            <View className="flex-row flex-wrap" style={{ gap }}>
+              <KpiCard style={{ width: kpiWidth }} label="Omzet" value={formatRupiah(report.omzet)} tone="brand" hint="Tanpa pajak & service" />
+              <KpiCard style={{ width: kpiWidth }} label="Jumlah Transaksi" value={String(report.transactions)} />
+              <KpiCard style={{ width: kpiWidth }} label="Rata-rata / Transaksi" value={formatRupiah(report.average)} />
+              <KpiCard
+                style={{ width: kpiWidth }}
+                label="Laba Sederhana"
+                value={formatRupiah(report.profit)}
+                tone={report.profit >= 0 ? "good" : "bad"}
+                hint={`HPP ${formatRupiah(report.hpp)}`}
+              />
+              <KpiCard style={{ width: kpiWidth }} label="Total Pengeluaran" value={formatRupiah(report.expenses)} />
+              <KpiCard
+                style={{ width: kpiWidth }}
+                label="Order Dibatalkan"
+                value={String(report.cancelledCount)}
+                tone={report.cancelledCount ? "bad" : "default"}
+                hint={report.cancelledCount ? formatRupiah(report.cancelledValue) : undefined}
               />
             </View>
-          </View>
-        ))}
-      </View>
 
-      {/* 6. Metode Pembayaran (Persentase Bar) */}
-      <View className="bg-white p-4 rounded-2xl mb-8 shadow-sm border border-gray-100">
-        <Text className="text-base font-bold text-gray-800 mb-4">Metode Pembayaran</Text>
-        {paymentMethods.map((metode, index) => (
-          <View key={index} className="mb-3">
-            <View className="flex-row justify-between mb-1">
-              <Text className="text-gray-700">{metode.metode}</Text>
-              <Text className="text-gray-500 font-medium">{metode.persen}%</Text>
+            <View className={wide ? "flex-row" : ""} style={{ gap }}>
+              <Section title={isHourly ? "Penjualan per Jam" : "Penjualan per Hari"} style={wide ? { width: half } : undefined}>
+                <BarChart
+                  data={report.sales}
+                  format={formatRupiah}
+                  unitLabel={(b) => (isHourly ? `Jam ${b.label}:00` : period.type === "week" ? b.label : `Tanggal ${b.label}`)}
+                />
+                <AppText variant="muted" className="mt-2 text-[11px]">
+                  Skala tertinggi {shortRupiah(Math.max(0, ...report.sales.map((s) => s.value)))}
+                </AppText>
+              </Section>
+              <Section title="Jam Ramai (jumlah order)" style={wide ? { width: half } : undefined}>
+                <BarChart data={report.peakHours} format={(v) => `${v} order`} unitLabel={(b) => `Jam ${b.label}:00`} />
+              </Section>
             </View>
-            <View className="w-full bg-gray-100 h-2 rounded-full overflow-hidden">
-              <View
-                className={`${metode.warna} h-full rounded-full`}
-                style={{ width: `${metode.persen}%` }}
-              />
-            </View>
-          </View>
-        ))}
-      </View>
 
-    </ScrollView>
+            <View className={wide ? "flex-row" : ""} style={{ gap }}>
+              <Section title="Menu Terlaris" style={wide ? { width: half } : undefined}>
+                <ShareList
+                  items={report.topMenus.map((m) => ({
+                    key: m.name,
+                    label: m.name,
+                    amount: m.revenue,
+                    caption: `${m.qty} porsi`,
+                    percent: report.topMenus[0] ? (m.qty / report.topMenus[0].qty) * 100 : 0,
+                  }))}
+                />
+              </Section>
+              <View style={wide ? { width: half, gap } : { gap }}>
+                <Section title="Metode Bayar">
+                  <ShareList
+                    items={report.payments.map((p) => ({
+                      key: p.key,
+                      label: PAYMENT_METHOD_LABEL[p.key as PaymentMethod] ?? p.key,
+                      amount: p.amount,
+                      caption: `${p.percent}% · ${p.count}x`,
+                      percent: p.percent,
+                    }))}
+                  />
+                </Section>
+                <Section title="Tipe Pesanan">
+                  <ShareList
+                    items={report.orderTypes.map((t) => ({
+                      key: t.key,
+                      label: TYPE_LABEL[t.key as OrderTypeKey] ?? t.key,
+                      amount: t.amount,
+                      caption: `${t.percent}% · ${t.count}x`,
+                      percent: t.percent,
+                    }))}
+                  />
+                </Section>
+              </View>
+            </View>
+            <AppText variant="muted" className="text-center text-[11px]">
+              Metode bayar & tipe pesanan dihitung dari total yang dibayar (termasuk pajak & service).
+            </AppText>
+          </>
+        )}
+      </ScrollView>
+    </View>
   );
 }

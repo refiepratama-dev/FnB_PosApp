@@ -1,6 +1,2 @@
-import { UtensilsCrossed } from "lucide-react-native";
-import { ScreenPlaceholder } from "@/components/ScreenPlaceholder";
-
-export default function Screen() {
-  return <ScreenPlaceholder title="Kelola Menu" icon={UtensilsCrossed} />;
-}
+// Halaman ini hanya meneruskan ke fitur. Kerjakan isinya di src/features/products/ProductsScreen
+export { default } from "@/features/products/ProductsScreen";

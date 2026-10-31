@@ -1,6 +1,2 @@
-import { LayoutDashboard } from "lucide-react-native";
-import { ScreenPlaceholder } from "@/components/ScreenPlaceholder";
-
-export default function Screen() {
-  return <ScreenPlaceholder title="Dashboard" icon={LayoutDashboard} />;
-}
+// Halaman ini hanya meneruskan ke fitur. Kerjakan isinya di src/features/dashboard/DashboardScreen
+export { default } from "@/features/dashboard/DashboardScreen";

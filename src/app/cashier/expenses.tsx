@@ -1,6 +1,2 @@
-import { Wallet } from "lucide-react-native";
-import { ScreenPlaceholder } from "@/components/ScreenPlaceholder";
-
-export default function Screen() {
-  return <ScreenPlaceholder title="Pengeluaran" icon={Wallet} />;
-}
+// Halaman ini hanya meneruskan ke fitur. Kerjakan isinya di src/features/expenses/ExpensesScreen
+export { default } from "@/features/expenses/ExpensesScreen";

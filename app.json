@@ -36,6 +36,14 @@
           "microphonePermission": false,
           "recordAudioAndroid": false
         }
+      ],
+      [
+        "expo-image-picker",
+        {
+          "photosPermission": "TemanPOS memakai galeri untuk foto menu dan nota.",
+          "cameraPermission": "TemanPOS memakai kamera untuk scan QR toko.",
+          "microphonePermission": false
+        }
       ]
     ]
   }

@@ -1,5 +1,6 @@
 import { View } from "react-native";
 import { Redirect, Slot } from "expo-router";
+import { SafeAreaView } from "react-native-safe-area-context";
 import { CashierSidebar } from "@/components/CashierSidebar";
 import { useOrientation } from "@/lib/orientation";
 import { useSession } from "@/store/session";
@@ -14,9 +15,9 @@ export default function CashierLayout() {
   return (
     <View className="flex-1 flex-row bg-white">
       <CashierSidebar />
-      <View className="flex-1">
+      <SafeAreaView edges={["top", "right", "bottom"]} className="flex-1">
         <Slot />
-      </View>
+      </SafeAreaView>
     </View>
   );
 }

@@ -66,19 +66,30 @@ Total akhir **tidak dibulatkan** **(usulan)**. Semua angka rupiah dibulatkan ke 
 - Menu Setting sama untuk kedua tampilan. Di mode kasir, menu khusus owner (Kelola Produk, Ubah PIN, QR toko) minta PIN owner saat dibuka.
 - Nama yang tampil di mode Owner = **nama toko**.
 
-## I. Entitas data (MVP)
+## I. Entitas data (MVP) ✅
+Sumber kebenaran: `supabase/migrations/`. Tabel ini ringkasannya.
+
 | Tabel | Isi |
 |-------|-----|
-| `store_settings` | Profil toko (nama, alamat, logo, no. HP: diisi tim), pajak, service, persen ojol per provider, footer struk, ukuran kertas, zona waktu, **PIN owner (hash, awal 0000)** |
+| `store_settings` | 1 baris: profil toko (diisi tim), pajak, service, persen ojol per provider, footer struk, ukuran kertas, zona waktu |
+| `owner_pin` | Hash PIN owner (awal `0000`). **Tidak bisa dibaca app**, hanya lewat fungsi `verify_owner_pin`, `change_owner_pin`, `reset_owner_pin` |
 | `categories` | Kategori menu |
-| `menu_items` | Nama, harga, HPP, foto, kategori, `track_stock`, `stock_qty`, status arsip |
-| `variant_groups`, `variants` | Grup varian (Ukuran, Suhu) + pilihan & harganya |
-| `addon_groups`, `addons` | Grup topping (wajib/opsional, maks pilihan) + pilihan & harganya |
-| `members` | Nama, no HP |
-| `orders` | Nomor, tipe (dine-in/takeaway/ojol), provider ojol, no order ojol, no meja, nama pelanggan, member, subtotal, diskon %, service, pajak, total, metode bayar, sumber uang ojol, status (Lunas/Dibatalkan), alasan batal, waktu |
-| `order_items` | Salinan nama, harga, HPP, varian, jumlah, catatan |
-| `order_item_addons` | Salinan topping per item |
+| `menu_items` | Nama, harga, HPP, foto, kategori, `track_stock`, `stock_qty`, arsip |
+| `option_groups` | Grup pilihan per menu. `type = variant` (pilih tepat 1, misal Ukuran/Saus) atau `addon` (topping, pilih 0..`max_select`) |
+| `options` | Pilihan dalam grup + `price_delta` (tambahan harga) |
+| `members` | Nama, no HP (unik) |
+| `orders` | Nomor `TP-YYMMDD-001`, tipe, provider ojol, meja, pelanggan, member, subtotal, diskon, service, pajak, total, metode bayar, sumber uang ojol, status (`paid`/`cancelled`) |
+| `order_items` | Salinan nama, harga satuan, HPP, jumlah, catatan, pilihan (`options` JSON) |
 | `expenses` | Keterangan, nominal, metode, foto nota, tanggal |
-| `stock_movements` | Riwayat stok: tambah, sesuaikan, terjual, kembali (batal) |
+| `stock_movements` | Riwayat stok: `add`, `adjust`, `sale`, `cancel` |
 
-Disiapkan untuk fase 2 (belum dipakai): kolom `outlet_id` agar multi-outlet mudah ditambah.
+**Harga varian & topping:** `harga item = harga dasar + jumlah price_delta pilihan` (varian juga berupa tambahan harga, misal Regular +0, Large +5.000).
+
+**Aturan tulis data:**
+- Order dibuat lewat fungsi `create_order`, dibatalkan lewat `cancel_order` (stok otomatis ikut). App tidak bisa insert/edit order langsung.
+- Stok diubah lewat `adjust_stock` (tambah / sesuaikan). App tidak bisa mengubah `stock_qty` langsung.
+- Subtotal, diskon, service, pajak & total **dihitung ulang di database** saat order dibuat.
+
+**Storage (foto):** bucket `menu-images`, `store-assets`, `expense-receipts` (maks 2 MB, JPG/PNG/WebP).
+
+Fase 2: kolom `outlet_id` untuk multi-outlet ditambahkan lewat migration baru saat dibutuhkan.

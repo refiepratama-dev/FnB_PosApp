@@ -10,6 +10,7 @@ import { formatDate, formatRupiah, formatTime } from "@/lib/format";
 import { periodRange, todayPeriod } from "@/lib/period";
 import { buildReport } from "@/lib/report";
 import { orderTypeText } from "@/features/orders/orderLabels";
+import { useExpensesRealtime } from "@/features/expenses/useExpenses";
 import { KpiCard } from "@/features/reports/KpiCard";
 
 const SHORTCUTS: { label: string; href: Href; icon: LucideIcon; tint: string; color: string }[] = [
@@ -23,6 +24,7 @@ const SHORTCUTS: { label: string; href: Href; icon: LucideIcon; tint: string; co
  * Desain awal: Fahri. Realtime & cekring dipasang di layout Owner (useOwnerOrderAlerts).
  */
 export default function DashboardScreen() {
+  useExpensesRealtime(); // pengeluaran baru dari device lain ikut mengubah laba
   const range = periodRange(todayPeriod());
   const query = useReportData(range);
 

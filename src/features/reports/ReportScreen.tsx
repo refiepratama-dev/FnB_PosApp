@@ -5,6 +5,7 @@ import { PeriodFilter } from "@/components/PeriodFilter";
 import { QueryState } from "@/components/QueryState";
 import { ScreenHeader } from "@/components/ScreenHeader";
 import { OJOL_PROVIDER_LABEL, ORDER_TYPE_LABEL, PAYMENT_METHOD_LABEL } from "@/constants/labels";
+import { useExpensesRealtime } from "@/features/expenses/useExpenses";
 import { useReportData } from "@/hooks/useReportData";
 import { formatRupiah } from "@/lib/format";
 import { periodRange, todayPeriod } from "@/lib/period";
@@ -43,6 +44,7 @@ function Section({ title, children, style }: { title: string; children: React.Re
  * Desain awal: Fahri. Data asli dari Supabase, hitungan di src/lib/report.ts.
  */
 export default function ReportScreen() {
+  useExpensesRealtime(); // pengeluaran baru dari device lain ikut mengubah total pengeluaran & laba
   const [period, setPeriod] = useState(todayPeriod());
   const [width, setWidth] = useState(0);
   const range = periodRange(period);

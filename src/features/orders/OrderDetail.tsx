@@ -1,7 +1,9 @@
-import { ScrollView, View } from "react-native";
+import { useEffect } from "react";
+import { Alert, ScrollView, View } from "react-native";
 import { AppText } from "@/components/AppText";
 import { Button } from "@/components/Button";
 import { OJOL_CASH_SOURCE_LABEL, PAYMENT_METHOD_LABEL } from "@/constants/labels";
+import { usePrintReceipt } from "@/hooks/usePrintReceipt";
 import { formatDateTime, formatRupiah } from "@/lib/format";
 import type { OrderWithItems } from "@/types/database";
 import { orderTypeText } from "./orderLabels";
@@ -34,6 +36,16 @@ function MoneyRow({ label, value, minus = false, bold = false }: { label: string
 /** Isi detail order: info, item, rincian harga, tombol cetak ulang & batalkan. */
 export function OrderDetail({ order, onCancel }: { order: OrderWithItems; onCancel: () => void }) {
   const cancelled = order.status === "cancelled";
+  const receipt = usePrintReceipt();
+  const { reset } = receipt;
+
+  // pindah ke order lain -> status "Tercetak" dikosongkan lagi
+  useEffect(() => reset(), [order.id, reset]);
+
+  async function reprint() {
+    const error = await receipt.print(order, order.order_items);
+    if (error) Alert.alert("Struk gagal dicetak", error);
+  }
   const payment =
     order.payment_method === "ojol" && order.ojol_cash_source
       ? OJOL_CASH_SOURCE_LABEL[order.ojol_cash_source]
@@ -106,9 +118,14 @@ export function OrderDetail({ order, onCancel }: { order: OrderWithItems; onCanc
       </ScrollView>
 
       <View className="flex-row gap-3 border-t border-line p-4">
-        {/* TODO (tahap printer): cetak ulang struk */}
         <View className="flex-1">
-          <Button title="Cetak Ulang" variant="outline" disabled />
+          <Button
+            title={receipt.status === "done" ? "Tercetak ✓" : "Cetak Ulang"}
+            variant="outline"
+            loading={receipt.status === "printing"}
+            disabled={receipt.status === "printing"}
+            onPress={reprint}
+          />
         </View>
         {!cancelled ? (
           <View className="flex-1">

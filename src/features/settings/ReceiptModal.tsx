@@ -70,7 +70,7 @@ export function ReceiptModal({
         <Chip label="80 mm" active={paper === "80"} onPress={() => setPaper("80")} />
       </View>
       <AppText variant="muted" className="text-xs">
-        Sambungan printer Bluetooth / USB menyusul bersama fitur cetak struk.
+        58 mm = 32 huruf per baris, 80 mm = 48 huruf. Pilih printer di menu Setting, Printer.
       </AppText>
     </AppModal>
   );

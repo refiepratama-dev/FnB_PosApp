@@ -1,21 +1,22 @@
 import { useState } from "react";
 import { Alert, View } from "react-native";
 import { router } from "expo-router";
-import { Bike, Percent, QrCode, ReceiptText, ShieldCheck, UtensilsCrossed } from "lucide-react-native";
+import { Bike, Percent, Printer, QrCode, ReceiptText, ShieldCheck, UtensilsCrossed } from "lucide-react-native";
 import { ScreenHeader } from "@/components/ScreenHeader";
 import { SettingsList, type SettingItem } from "@/components/SettingsList";
 import { useStoreSettings } from "@/hooks/useStoreSettings";
 import { useSession } from "@/store/session";
 import { ChangePinModal } from "./ChangePinModal";
 import { OjolMarkupModal } from "./OjolMarkupModal";
+import { PrinterModal } from "./PrinterModal";
 import { ReceiptModal } from "./ReceiptModal";
 import { StoreQrModal } from "./StoreQrModal";
 import { TaxServiceModal } from "./TaxServiceModal";
 
-type Panel = "tax" | "ojol" | "receipt" | "pin" | "qr" | null;
+type Panel = "tax" | "ojol" | "receipt" | "printer" | "pin" | "qr" | null;
 
 /**
- * Setting (sama untuk Owner & Kasir): pajak & service, persen harga ojol, struk & kertas,
+ * Setting (sama untuk Owner & Kasir): pajak & service, persen harga ojol, struk & kertas, printer,
  * kelola produk, ubah PIN, QR toko, logout.
  * Menu bertanda ownerOnly (Kelola Produk, Ubah PIN, QR Toko) tetap tampil di mode Kasir,
  * tapi minta PIN owner dulu saat ditap (diurus oleh SettingsList).
@@ -41,6 +42,7 @@ export default function SettingsScreen() {
     { label: "Pajak & Service", icon: Percent, onPress: () => openWithSettings("tax") },
     { label: "Harga Ojol", icon: Bike, onPress: () => openWithSettings("ojol") },
     { label: "Struk & Kertas", icon: ReceiptText, onPress: () => openWithSettings("receipt") },
+    { label: "Printer", icon: Printer, onPress: () => openWithSettings("printer") },
     {
       label: "Kelola Produk",
       icon: UtensilsCrossed,
@@ -63,6 +65,7 @@ export default function SettingsScreen() {
           <TaxServiceModal visible={panel === "tax"} settings={settings} onClose={close} />
           <OjolMarkupModal visible={panel === "ojol"} settings={settings} onClose={close} />
           <ReceiptModal visible={panel === "receipt"} settings={settings} onClose={close} />
+          <PrinterModal visible={panel === "printer"} settings={settings} onClose={close} />
         </>
       ) : null}
       <ChangePinModal visible={panel === "pin"} onClose={close} />

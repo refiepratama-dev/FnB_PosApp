@@ -6,6 +6,7 @@ import { EmptyState } from "@/components/EmptyState";
 import { QueryState } from "@/components/QueryState";
 import { SearchInput } from "@/components/SearchInput";
 import { useCategories, useMenuItems } from "@/hooks/useMenu";
+import { usePrintReceipt } from "@/hooks/usePrintReceipt";
 import { useStoreSettings } from "@/hooks/useStoreSettings";
 import { errorMessage } from "@/lib/errors";
 import { playCekring, successFeedback, tapFeedback } from "@/lib/feedback";
@@ -40,6 +41,7 @@ export default function CashierMenuScreen() {
   const [optionItem, setOptionItem] = useState<MenuItemWithOptions | null>(null);
   const [modal, setModal] = useState<"member" | "discount" | "payment" | null>(null);
   const [doneOrder, setDoneOrder] = useState<Order | null>(null);
+  const receipt = usePrintReceipt();
   const [measuredWidth, setMeasuredWidth] = useState(0);
 
   // Ukuran layout: lebar grid diukur langsung (onLayout), sebelum terukur pakai perkiraan
@@ -88,7 +90,7 @@ export default function CashierMenuScreen() {
           successFeedback();
           setModal(null);
           setDoneOrder(order);
-          // TODO (tahap printer): cetak struk otomatis di sini
+          receipt.print(order, undefined, { auto: true }); // cetak otomatis (diam kalau printer belum diatur)
         },
         onError: (e) => Alert.alert("Order gagal disimpan", errorMessage(e)),
       },
@@ -210,8 +212,12 @@ export default function CashierMenuScreen() {
       {doneOrder ? (
         <OrderDoneModal
           order={doneOrder}
+          printStatus={receipt.status}
+          printError={receipt.error}
+          onPrint={() => receipt.print(doneOrder)}
           onNewOrder={() => {
             cart.reset();
+            receipt.reset();
             setDoneOrder(null);
           }}
         />

@@ -1,14 +1,70 @@
-import { Modal, View } from "react-native";
-import { Check } from "lucide-react-native";
+import { ActivityIndicator, Modal, Pressable, View } from "react-native";
+import { Check, CircleAlert, Printer } from "lucide-react-native";
 import { AppText } from "@/components/AppText";
 import { Button } from "@/components/Button";
 import { colors } from "@/constants/colors";
 import { ORDER_TYPE_LABEL, OJOL_PROVIDER_LABEL, PAYMENT_METHOD_LABEL } from "@/constants/labels";
 import { formatRupiah } from "@/lib/format";
+import type { PrintStatus } from "@/hooks/usePrintReceipt";
 import type { Order } from "@/types/database";
 
-/** Layar Order Selesai: centang hijau di atas, ringkasan, satu tombol Order Baru. */
-export function OrderDoneModal({ order, onNewOrder }: { order: Order; onNewOrder: () => void }) {
+/** Baris status cetak struk di bawah ringkasan. */
+function PrintStatusRow({ status, error, onPrint }: { status: PrintStatus; error: string; onPrint: () => void }) {
+  if (status === "printing") {
+    return (
+      <View className="mb-4 h-10 flex-row items-center justify-center gap-2">
+        <ActivityIndicator color={colors.brand} />
+        <AppText variant="muted">Mencetak struk...</AppText>
+      </View>
+    );
+  }
+  if (status === "done") {
+    return (
+      <View className="mb-4 h-10 flex-row items-center justify-center gap-2">
+        <Printer size={18} color={colors.success} />
+        <AppText className="text-success">Struk tercetak</AppText>
+        <Pressable onPress={onPrint} hitSlop={8} className="ml-2 p-1">
+          <AppText className="text-sm text-brand">Cetak lagi</AppText>
+        </Pressable>
+      </View>
+    );
+  }
+  return (
+    <View className="mb-4 w-full items-center gap-2">
+      {status === "failed" ? (
+        <View className="w-full flex-row items-start gap-2 rounded-2xl bg-action-soft p-3">
+          <CircleAlert size={18} color={colors.action} />
+          <AppText className="flex-1 text-sm text-action">Struk gagal dicetak. {error}</AppText>
+        </View>
+      ) : status === "skipped" ? (
+        <AppText variant="muted" className="text-center text-xs">
+          Printer belum diatur. Pilih printer di Setting, Printer.
+        </AppText>
+      ) : null}
+      <Button
+        title={status === "failed" ? "Cetak Ulang" : "Cetak Struk"}
+        variant="outline"
+        className="w-full"
+        onPress={onPrint}
+      />
+    </View>
+  );
+}
+
+/** Layar Order Selesai: centang hijau di atas, ringkasan, status cetak struk, tombol Order Baru. */
+export function OrderDoneModal({
+  order,
+  printStatus,
+  printError,
+  onPrint,
+  onNewOrder,
+}: {
+  order: Order;
+  printStatus: PrintStatus;
+  printError: string;
+  onPrint: () => void;
+  onNewOrder: () => void;
+}) {
   const typeLabel =
     order.order_type === "ojol" && order.ojol_provider
       ? OJOL_PROVIDER_LABEL[order.ojol_provider]
@@ -38,7 +94,7 @@ export function OrderDoneModal({ order, onNewOrder }: { order: Order; onNewOrder
             <AppText variant="heading">{formatRupiah(order.total)}</AppText>
           </View>
 
-          {/* TODO (tahap printer): status cetak struk */}
+          <PrintStatusRow status={printStatus} error={printError} onPrint={onPrint} />
           <Button title="Order Baru" variant="action" className="w-full" onPress={onNewOrder} />
         </View>
       </View>

@@ -35,6 +35,7 @@ export function useReportData(range: DateRange) {
             .gte("business_date", range.from)
             .lte("business_date", range.to)
             .order("created_at", { ascending: false })
+            .order("id", { ascending: false }) // urutan tetap untuk pembagian halaman
             .range(from, to),
         ),
         fetchAll<Expense>((from, to) =>
@@ -43,6 +44,8 @@ export function useReportData(range: DateRange) {
             .select("*")
             .gte("expense_date", range.from)
             .lte("expense_date", range.to)
+            .order("expense_date", { ascending: false })
+            .order("id", { ascending: false }) // urutan tetap supaya pembagian halaman tidak menggandakan / melewatkan baris
             .range(from, to),
         ),
       ]);

@@ -44,3 +44,8 @@ yarn-error.*
 .env
 .env.*
 !.env.example
+
+# QR & kode toko hasil npm run qr-toko (berisi key toko, JANGAN commit)
+qr-toko/
+qr-toko-*.png
+kode-toko-*.txt

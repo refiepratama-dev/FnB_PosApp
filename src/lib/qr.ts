@@ -140,8 +140,11 @@ function alignmentPositions(version: number, size: number): number[] {
 class Grid {
   readonly modules: boolean[][];
   readonly isFunction: boolean[][];
+  readonly size: number;
 
-  constructor(readonly size: number) {
+  // ditulis tanpa "constructor(readonly size)" supaya file ini juga bisa dipakai script Node (scripts/qr-toko.mjs)
+  constructor(size: number) {
+    this.size = size;
     this.modules = Array.from({ length: size }, () => Array<boolean>(size).fill(false));
     this.isFunction = Array.from({ length: size }, () => Array<boolean>(size).fill(false));
   }

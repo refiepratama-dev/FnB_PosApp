@@ -56,7 +56,7 @@ export default function SettingsScreen() {
   const close = () => setPanel(null);
 
   return (
-    <View className="flex-1 bg-white">
+    <View className="flex-1 bg-panel">
       <ScreenHeader title="Setting" />
       <SettingsList items={items} />
 

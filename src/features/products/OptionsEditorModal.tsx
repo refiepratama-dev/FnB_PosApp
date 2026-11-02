@@ -9,7 +9,7 @@ import { TextField } from "@/components/TextField";
 import { colors } from "@/constants/colors";
 import { errorMessage } from "@/lib/errors";
 import type { MenuItemWithOptions } from "@/types/database";
-import { digitsOnly } from "./amount";
+import { digitsOnly, groupThousands } from "./amount";
 import {
   buildRows,
   newDraftGroup,
@@ -196,7 +196,7 @@ export function OptionsEditorModal({ menu, onClose }: { menu: MenuItemWithOption
                   className={`${CELL_CLASS} flex-1`}
                 />
                 <TextInput
-                  value={option.price}
+                  value={groupThousands(option.price)}
                   onChangeText={(price) => updateOption(group.key, option.key, { price: digitsOnly(price) })}
                   keyboardType="number-pad"
                   placeholder="0"

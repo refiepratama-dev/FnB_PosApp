@@ -1,5 +1,5 @@
 import { useRef, useState } from "react";
-import { ScrollView, TextInput, View } from "react-native";
+import { KeyboardAvoidingView, ScrollView, TextInput, View } from "react-native";
 import { router } from "expo-router";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { CameraView, useCameraPermissions } from "expo-camera";
@@ -50,7 +50,8 @@ export default function ConnectScreen() {
 
   return (
     <SafeAreaView className="flex-1 bg-white">
-      <ScrollView contentContainerClassName="flex-grow items-center justify-center px-6 py-8">
+      <KeyboardAvoidingView behavior="padding" className="flex-1">
+      <ScrollView contentContainerClassName="flex-grow items-center justify-center px-6 py-8" keyboardShouldPersistTaps="handled">
         <View className="w-full max-w-md items-center">
           <View className="mb-4 h-16 w-16 items-center justify-center rounded-3xl bg-brand-soft">
             <QrCode size={30} color={colors.brand} />
@@ -112,6 +113,7 @@ export default function ConnectScreen() {
           ) : null}
         </View>
       </ScrollView>
+      </KeyboardAvoidingView>
     </SafeAreaView>
   );
 }

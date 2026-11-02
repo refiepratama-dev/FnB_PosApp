@@ -145,12 +145,8 @@ export function OrderPanel({
   const cart = useCart();
   const itemCount = cart.lines.reduce((sum, l) => sum + l.qty, 0);
 
-  const blocker =
-    cart.lines.length === 0
-      ? "Keranjang masih kosong"
-      : cart.orderType === "dine_in" && !cart.tableNumber.trim()
-        ? "Isi nomor meja dulu"
-        : null;
+  // Nama pelanggan, nomor meja & member semuanya opsional: cukup keranjang tidak kosong
+  const blocker = cart.lines.length === 0 ? "Keranjang masih kosong" : null;
 
   return (
     <View style={{ width }} className="border-l border-line bg-white">
@@ -170,15 +166,6 @@ export function OrderPanel({
       <ScrollView className="flex-1" contentContainerClassName="gap-3 p-4" keyboardShouldPersistTaps="handled">
         <Segment items={TYPES} value={cart.orderType} label={(t) => ORDER_TYPE_LABEL[t]} onChange={cart.setOrderType} />
 
-        {cart.orderType === "dine_in" ? (
-          <SmallInput
-            value={cart.tableNumber}
-            onChangeText={(t) => cart.setField("tableNumber", t)}
-            placeholder="Nomor meja (wajib)"
-            keyboardType="number-pad"
-          />
-        ) : null}
-
         {cart.orderType === "ojol" ? (
           <>
             <Segment
@@ -196,6 +183,15 @@ export function OrderPanel({
           onChangeText={(t) => cart.setField("customerName", t)}
           placeholder="Nama pelanggan (opsional)"
         />
+
+        {cart.orderType === "dine_in" ? (
+          <SmallInput
+            value={cart.tableNumber}
+            onChangeText={(t) => cart.setField("tableNumber", t)}
+            placeholder="Nomor meja (opsional)"
+            keyboardType="number-pad"
+          />
+        ) : null}
 
         {cart.member ? (
           <View className="h-11 flex-row items-center gap-2 rounded-full bg-brand-soft pl-4 pr-1">

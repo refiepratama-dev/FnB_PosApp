@@ -1,5 +1,6 @@
 import { KeyboardAvoidingView, Modal, Platform, Pressable, ScrollView, View } from "react-native";
 import { X } from "lucide-react-native";
+import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { AppText } from "./AppText";
 import { colors } from "@/constants/colors";
 
@@ -26,10 +27,19 @@ export function AppModal({
   footer?: React.ReactNode;
   size?: "md" | "lg";
 }) {
+  // jaga jarak dari status bar & tombol navigasi Android (home/back) supaya tombol tidak tertutup
+  const insets = useSafeAreaInsets();
+  const pad = {
+    paddingTop: Math.max(16, insets.top),
+    paddingBottom: Math.max(16, insets.bottom),
+    paddingLeft: Math.max(16, insets.left),
+    paddingRight: Math.max(16, insets.right),
+  };
+
   return (
-    <Modal visible={visible} transparent animationType="fade" onRequestClose={onClose} supportedOrientations={["portrait", "landscape"]}>
+    <Modal visible={visible} transparent animationType="none" onRequestClose={onClose} supportedOrientations={["portrait", "landscape"]}>
       <KeyboardAvoidingView behavior={Platform.OS === "ios" ? "padding" : undefined} className="flex-1">
-        <View className="flex-1 items-center justify-center bg-black/40 p-4">
+        <View style={pad} className="flex-1 items-center justify-center bg-black/40">
           <Pressable className="absolute inset-0" onPress={onClose} />
           <View className={`max-h-full w-full overflow-hidden rounded-3xl bg-white ${size === "lg" ? "max-w-2xl" : "max-w-lg"}`}>
             <View className="h-16 flex-row items-center justify-between border-b border-line pl-5 pr-3">

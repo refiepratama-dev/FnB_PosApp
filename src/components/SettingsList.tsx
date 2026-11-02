@@ -20,16 +20,23 @@ function Row({
   onPress,
   danger = false,
   locked = false,
+  first = false,
 }: {
   label: string;
   icon: LucideIcon;
   onPress: () => void;
   danger?: boolean;
   locked?: boolean;
+  first?: boolean;
 }) {
   return (
-    <Pressable onPress={onPress} className="h-14 flex-row items-center gap-3 border-b border-line px-4 active:bg-panel">
-      <Icon size={20} color={danger ? colors.action : colors.ink} />
+    <Pressable
+      onPress={onPress}
+      className={`h-16 flex-row items-center gap-3.5 px-4 active:bg-panel ${first ? "" : "border-t border-line"}`}
+    >
+      <View className={`h-10 w-10 items-center justify-center rounded-xl ${danger ? "bg-action-soft" : "bg-brand-soft"}`}>
+        <Icon size={20} color={danger ? colors.action : colors.brand} />
+      </View>
       <AppText className={`flex-1 text-base ${danger ? "text-action" : ""}`}>{label}</AppText>
       {locked && <Lock size={16} color={colors.inkMuted} />}
       {!danger && <ChevronRight size={18} color={colors.inkMuted} />}
@@ -78,19 +85,34 @@ export function SettingsList({ items = [] }: { items?: SettingItem[] }) {
   }
 
   return (
-    <ScrollView className="flex-1 bg-white">
-      <View className="border-t border-line">
-        {items.map((item) => (
+    <ScrollView className="flex-1 bg-panel" contentContainerClassName="w-full max-w-2xl gap-4 p-4">
+      {/* Daftar pengaturan dalam satu kartu */}
+      <View className="overflow-hidden rounded-3xl border border-line bg-white">
+        {items.map((item, i) => (
           <Row
             key={item.label}
             label={item.label}
             icon={item.icon}
+            first={i === 0}
             locked={!!item.ownerOnly && mode === "cashier"}
             onPress={() => press(item)}
           />
         ))}
-        <Row label="Logout akun" icon={LogOut} onPress={confirmLogout} danger />
       </View>
+
+      {/* Logout di kartu terpisah supaya tidak tertekan tanpa sengaja */}
+      <View className="overflow-hidden rounded-3xl border border-line bg-white">
+        <Row label="Logout akun" icon={LogOut} onPress={confirmLogout} danger first />
+      </View>
+
+      {mode === "cashier" ? (
+        <View className="flex-row items-center gap-2 px-1">
+          <Lock size={14} color={colors.inkMuted} />
+          <AppText variant="muted" className="flex-1 text-xs">
+            Menu bergembok minta PIN owner dulu
+          </AppText>
+        </View>
+      ) : null}
 
       <OwnerPinModal
         visible={pinFor !== null}

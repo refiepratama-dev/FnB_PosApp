@@ -6,6 +6,7 @@ import { CameraView, useCameraPermissions } from "expo-camera";
 import { AppText } from "@/components/AppText";
 import { Button } from "@/components/Button";
 import { colors } from "@/constants/colors";
+import { QrCode } from "lucide-react-native";
 import { devConnection, parseStoreCode, testConnection, type StoreConnection } from "@/lib/connection";
 import { useOrientation } from "@/lib/orientation";
 import { useSession } from "@/store/session";
@@ -52,7 +53,7 @@ export default function ConnectScreen() {
       <KeyboardAvoidingView behavior="padding" className="flex-1">
       <ScrollView contentContainerClassName="flex-grow items-center justify-center px-6 py-8" keyboardShouldPersistTaps="handled">
         <View className="w-full max-w-md items-center">
-          <Image source={require("../../assets/logo.png")} className="mb-6 h-[143px] w-[180px]" resizeMode="contain" />
+          <Image source={require("../../assets/logo.png")} className="mb-6 h-[132px] w-[180px]" resizeMode="contain" />
           <AppText variant="heading" className="text-2xl">
             Hubungkan ke Toko
           </AppText>
@@ -70,7 +71,13 @@ export default function ConnectScreen() {
               />
             </View>
           ) : (
-            <Button title="Izinkan Kamera untuk Scan QR" className="mb-4 w-full" onPress={requestPermission} />
+            <>
+              <View className="mb-5 aspect-square w-full max-w-[220px] items-center justify-center gap-3 rounded-3xl bg-brand-soft">
+                <QrCode size={64} color={colors.brand} />
+                <AppText className="text-center text-xs text-brand-strong">Kamera dipakai untuk scan QR</AppText>
+              </View>
+              <Button title="Izinkan Kamera untuk Scan QR" className="mb-4 w-full" onPress={requestPermission} />
+            </>
           )}
 
           {error ? <AppText className="mb-4 text-center text-sm text-action">{error}</AppText> : null}

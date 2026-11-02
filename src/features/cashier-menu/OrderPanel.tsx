@@ -229,8 +229,8 @@ export function OrderPanel({
       {/* Total & tombol bayar */}
       <View className="gap-2 border-t border-line p-4">
         <Pressable onPress={onDiscount} className="flex-row items-center gap-2 self-start rounded-full bg-panel px-3 py-1.5 active:bg-line">
-          <Percent size={14} color={cart.discountPercent ? colors.action : colors.ink} />
-          <AppText className={`text-xs ${cart.discountPercent ? "font-heading text-action" : ""}`}>
+          <Percent size={14} color={cart.discountPercent ? colors.accent : colors.ink} />
+          <AppText className={`text-xs ${cart.discountPercent ? "font-heading text-accent-ink" : ""}`}>
             {cart.discountPercent ? `Diskon ${cart.discountPercent}%` : "Tambah diskon"}
           </AppText>
         </Pressable>
@@ -255,7 +255,7 @@ export function OrderPanel({
 
         <Button
           title={blocker ?? (cart.orderType === "ojol" ? "Simpan Order" : "Bayar")}
-          variant="action"
+          variant="pay"
           disabled={!!blocker}
           onPress={onPay}
         />

@@ -112,8 +112,8 @@ export function OptionsEditorModal({ menu, onClose }: { menu: MenuItemWithOption
         return (
           <Card key={group.key} className="mb-4">
             <View className="mb-3 flex-row items-center justify-between">
-              <View className={`rounded-full px-3 py-1 ${isVariant ? "bg-brand-soft" : "bg-action-soft"}`}>
-                <AppText variant="heading" className={`text-xs ${isVariant ? "text-brand" : "text-action"}`}>
+              <View className={`rounded-full px-3 py-1 ${isVariant ? "bg-brand-soft" : "bg-accent-soft"}`}>
+                <AppText variant="heading" className={`text-xs ${isVariant ? "text-brand" : "text-accent-ink"}`}>
                   {isVariant ? "VARIAN" : "TOPPING"}
                 </AppText>
               </View>

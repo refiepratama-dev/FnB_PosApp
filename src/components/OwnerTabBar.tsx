@@ -33,8 +33,10 @@ export function OwnerTabBar() {
           const active = pathname === href;
           return (
             <Pressable key={label} onPress={() => router.replace(href)} className="flex-1 items-center py-1">
-              <Icon size={22} color={active ? colors.brand : colors.inkMuted} />
-              <AppText className={`mt-1 text-xs ${active ? "font-heading text-brand" : "text-ink-muted"}`}>
+              <View className={`h-8 w-14 items-center justify-center rounded-full ${active ? "bg-accent-soft" : ""}`}>
+                <Icon size={22} color={active ? colors.accent : colors.inkMuted} />
+              </View>
+              <AppText className={`mt-1 text-xs ${active ? "font-heading text-accent-ink" : "text-ink-muted"}`}>
                 {label}
               </AppText>
             </Pressable>

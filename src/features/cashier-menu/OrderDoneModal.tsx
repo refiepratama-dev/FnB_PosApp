@@ -100,7 +100,7 @@ export function OrderDoneModal({
           </View>
 
           <PrintStatusRow status={printStatus} error={printError} onPrint={onPrint} />
-          <Button title="Order Baru" variant="action" className="w-full" onPress={onNewOrder} />
+          <Button title="Order Baru" variant="brand" className="w-full" onPress={onNewOrder} />
         </View>
       </View>
     </Modal>

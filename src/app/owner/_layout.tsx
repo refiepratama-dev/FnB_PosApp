@@ -1,4 +1,4 @@
-import { Pressable, View } from "react-native";
+import { Image, Pressable, View } from "react-native";
 import { Redirect, Slot, router } from "expo-router";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { LogOut } from "lucide-react-native";
@@ -33,7 +33,8 @@ export default function OwnerLayout() {
     <View className="flex-1 bg-white">
       <SafeAreaView edges={["top"]} className="border-b border-line bg-white">
         <View className="h-14 flex-row items-center justify-between px-4">
-          <AppText variant="heading" numberOfLines={1} className="mr-3 flex-1 text-lg">
+          <Image source={require("../../../assets/logo-mark.png")} className="mr-2.5 h-7 w-7" resizeMode="contain" />
+          <AppText variant="heading" numberOfLines={1} className="mr-3 flex-1 text-lg text-navy">
             {storeName || "TemanPOS"}
           </AppText>
           <Pressable onPress={exit} className="h-10 flex-row items-center gap-2 rounded-full bg-panel px-4 active:bg-line">

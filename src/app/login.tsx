@@ -48,8 +48,8 @@ export default function LoginScreen() {
       <KeyboardAvoidingView behavior="padding" className="flex-1">
         <ScrollView contentContainerClassName="flex-grow items-center justify-center px-6 py-8" keyboardShouldPersistTaps="handled">
           <View className="w-full max-w-sm">
-            <Image source={require("../../assets/logo-mark.png")} className="mb-4 h-20 w-[72px] self-center" resizeMode="contain" />
-            <AppText variant="heading" className="text-center text-2xl">
+            <Image source={require("../../assets/logo-mark.png")} className="mb-4 h-20 w-20 self-center" resizeMode="contain" />
+            <AppText variant="heading" className="text-center text-2xl text-navy">
               {isResetPin ? "Lupa PIN" : "Login Toko"}
             </AppText>
             <AppText variant="muted" className="mb-8 mt-1 text-center">

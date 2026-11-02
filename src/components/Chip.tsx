@@ -1,7 +1,7 @@
 import { Pressable, type PressableProps } from "react-native";
 import { AppText } from "./AppText";
 
-/** Tombol pilihan kecil (kategori, filter). Aktif = biru. */
+/** Tombol pilihan kecil (kategori, filter). Aktif = oranye lembut. */
 export function Chip({
   label,
   active = false,
@@ -11,11 +11,11 @@ export function Chip({
   return (
     <Pressable
       className={`h-10 items-center justify-center rounded-full border px-4 ${
-        active ? "border-brand bg-brand" : "border-line bg-white active:bg-panel"
+        active ? "border-accent bg-accent-soft" : "border-line bg-white active:bg-panel"
       } ${className}`}
       {...props}
     >
-      <AppText className={`text-sm ${active ? "font-heading text-white" : "text-ink"}`}>{label}</AppText>
+      <AppText className={`text-sm ${active ? "font-heading text-accent-ink" : "text-ink"}`}>{label}</AppText>
     </Pressable>
   );
 }

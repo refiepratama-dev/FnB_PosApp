@@ -9,7 +9,12 @@ export function digitsOnly(text: string): string {
   return text.replace(/\D/g, "");
 }
 
-/** "15000" -> 15000. Kosong / tidak valid -> null. */
+/** "15000" -> "15.000" (tampilan di kolom input harga, pemisah ribuan titik) */
+export function groupThousands(digits: string): string {
+  return digitsOnly(digits).replace(/\B(?=(\d{3})+(?!\d))/g, ".");
+}
+
+/** "15000" / "15.000" -> 15000. Kosong / tidak valid -> null. */
 export function parseAmount(text: string): number | null {
   const digits = digitsOnly(text);
   if (!digits) return null;

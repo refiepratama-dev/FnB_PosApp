@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { KeyboardAvoidingView, Platform, Pressable, ScrollView, View } from "react-native";
+import { KeyboardAvoidingView, Pressable, ScrollView, View } from "react-native";
 import { router, useLocalSearchParams } from "expo-router";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { Store } from "lucide-react-native";
@@ -47,7 +47,7 @@ export default function LoginScreen() {
   return (
     <SafeAreaView className="flex-1 bg-white">
       {isResetPin ? <BackButton /> : null}
-      <KeyboardAvoidingView behavior={Platform.OS === "ios" ? "padding" : undefined} className="flex-1">
+      <KeyboardAvoidingView behavior="padding" className="flex-1">
         <ScrollView contentContainerClassName="flex-grow items-center justify-center px-6 py-8" keyboardShouldPersistTaps="handled">
           <View className="w-full max-w-sm">
             <View className="mb-4 h-16 w-16 items-center justify-center self-center rounded-3xl bg-brand-soft">

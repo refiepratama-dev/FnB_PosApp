@@ -38,7 +38,7 @@ export default function RootLayout() {
     <QueryClientProvider client={queryClient}>
       <LiveData />
       <StatusBar style="dark" />
-      <Stack screenOptions={{ headerShown: false, animation: "fade" }} />
+      <Stack screenOptions={{ headerShown: false, animation: "none" }} />
     </QueryClientProvider>
   );
 }

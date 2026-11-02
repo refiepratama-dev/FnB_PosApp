@@ -8,10 +8,9 @@ import { Chip } from "@/components/Chip";
 import { TextField } from "@/components/TextField";
 import { colors } from "@/constants/colors";
 import { errorMessage } from "@/lib/errors";
-import { formatRupiah } from "@/lib/format";
 import { pickImage } from "@/lib/images";
 import type { Category, MenuItem, MenuItemWithOptions } from "@/types/database";
-import { MAX_AMOUNT, digitsOnly, parseAmount } from "./amount";
+import { MAX_AMOUNT, digitsOnly, groupThousands, parseAmount } from "./amount";
 import { MenuThumb } from "@/components/MenuThumb";
 import { useArchiveMenuItem, useSaveMenuItem } from "./useProducts";
 
@@ -172,23 +171,21 @@ export function ProductFormModal({
       <View className="mb-4">
         <TextField
           label="Harga jual (Rp)"
-          value={priceText}
+          value={groupThousands(priceText)}
           onChangeText={(t) => setPriceText(digitsOnly(t))}
           keyboardType="number-pad"
           placeholder="0"
         />
-        {price ? <AppText variant="muted" className="mt-1 text-xs">{formatRupiah(price)}</AppText> : null}
       </View>
 
       <View className="mb-5">
         <TextField
           label="Harga modal / HPP (Rp), opsional"
-          value={costText}
+          value={groupThousands(costText)}
           onChangeText={(t) => setCostText(digitsOnly(t))}
           keyboardType="number-pad"
           placeholder="Dipakai untuk hitung laba di laporan"
         />
-        {cost ? <AppText variant="muted" className="mt-1 text-xs">{formatRupiah(cost)}</AppText> : null}
       </View>
 
       <AppText className="mb-2 text-sm">Kategori</AppText>

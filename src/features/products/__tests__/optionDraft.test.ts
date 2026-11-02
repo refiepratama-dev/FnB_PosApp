@@ -116,3 +116,14 @@ describe("toDraftGroups & summarizeOptions", () => {
     expect(newDraftGroup("addon").required).toBe(false);
   });
 });
+
+describe("groupThousands (kolom harga)", () => {
+  it("memberi titik pemisah ribuan", async () => {
+    const { groupThousands } = await import("../amount");
+    expect(groupThousands("")).toBe("");
+    expect(groupThousands("500")).toBe("500");
+    expect(groupThousands("15000")).toBe("15.000");
+    expect(groupThousands("1250000")).toBe("1.250.000");
+    expect(groupThousands("15.000")).toBe("15.000"); // sudah bertitik tetap sama
+  });
+});

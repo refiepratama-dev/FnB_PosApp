@@ -1,5 +1,6 @@
 import { ActivityIndicator, Modal, Pressable, View } from "react-native";
 import { Check, CircleAlert, Printer } from "lucide-react-native";
+import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { AppText } from "@/components/AppText";
 import { Button } from "@/components/Button";
 import { colors } from "@/constants/colors";
@@ -65,14 +66,18 @@ export function OrderDoneModal({
   onPrint: () => void;
   onNewOrder: () => void;
 }) {
+  const insets = useSafeAreaInsets();
   const typeLabel =
     order.order_type === "ojol" && order.ojol_provider
       ? OJOL_PROVIDER_LABEL[order.ojol_provider]
       : ORDER_TYPE_LABEL[order.order_type];
 
   return (
-    <Modal visible transparent animationType="fade" supportedOrientations={["portrait", "landscape"]} onRequestClose={onNewOrder}>
-      <View className="flex-1 items-center justify-center bg-black/40 p-4">
+    <Modal visible transparent animationType="none" supportedOrientations={["portrait", "landscape"]} onRequestClose={onNewOrder}>
+      <View
+        style={{ paddingTop: Math.max(16, insets.top), paddingBottom: Math.max(16, insets.bottom), paddingHorizontal: Math.max(16, insets.left, insets.right) }}
+        className="flex-1 items-center justify-center bg-black/40"
+      >
         <View className="w-full max-w-sm items-center rounded-3xl bg-white p-6">
           <View className="mb-4 h-20 w-20 items-center justify-center rounded-full bg-success">
             <Check size={44} color={colors.white} strokeWidth={3} />

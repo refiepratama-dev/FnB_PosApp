@@ -46,7 +46,7 @@ Total akhir **tidak dibulatkan** **(usulan)**. Semua angka rupiah dibulatkan ke 
 
 ## E. Validasi
 - Nomor HP member: angka saja, diawali `08` atau `62`, 10–14 digit, **unik**.
-- Nama member: wajib. Nomor meja: wajib untuk dine-in.
+- Nama member: wajib. Nomor meja, nama pelanggan & member: opsional (termasuk dine-in).
 - Diskon: 0–100%. Persen pajak/service/ojol: 0–100%.
 - Harga & nominal pengeluaran: lebih dari 0.
 

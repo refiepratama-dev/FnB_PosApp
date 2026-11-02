@@ -36,7 +36,7 @@ Saat app dibuka, app **langsung masuk ke mode terakhir** (Owner atau Kasir) tanp
 
 ## E. Order: Dine-in
 Sama seperti takeaway, ditambah:
-- Pilih tipe **Dine-in** → isi **nomor meja (wajib)**.
+- Pilih tipe **Dine-in** → isi **nomor meja (opsional)**.
 - Tetap **langsung bayar**. Tambah pesanan = buat order baru.
 
 ## F. Order: Ojol

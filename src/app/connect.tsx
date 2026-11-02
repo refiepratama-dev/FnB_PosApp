@@ -1,9 +1,8 @@
 import { useRef, useState } from "react";
-import { KeyboardAvoidingView, ScrollView, TextInput, View } from "react-native";
+import { Image, KeyboardAvoidingView, ScrollView, TextInput, View } from "react-native";
 import { router } from "expo-router";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { CameraView, useCameraPermissions } from "expo-camera";
-import { QrCode } from "lucide-react-native";
 import { AppText } from "@/components/AppText";
 import { Button } from "@/components/Button";
 import { colors } from "@/constants/colors";
@@ -53,9 +52,7 @@ export default function ConnectScreen() {
       <KeyboardAvoidingView behavior="padding" className="flex-1">
       <ScrollView contentContainerClassName="flex-grow items-center justify-center px-6 py-8" keyboardShouldPersistTaps="handled">
         <View className="w-full max-w-md items-center">
-          <View className="mb-4 h-16 w-16 items-center justify-center rounded-3xl bg-brand-soft">
-            <QrCode size={30} color={colors.brand} />
-          </View>
+          <Image source={require("../../assets/logo.png")} className="mb-6 h-[143px] w-[180px]" resizeMode="contain" />
           <AppText variant="heading" className="text-2xl">
             Hubungkan ke Toko
           </AppText>

@@ -1,13 +1,11 @@
 import { useState } from "react";
-import { KeyboardAvoidingView, Pressable, ScrollView, View } from "react-native";
+import { Image, KeyboardAvoidingView, Pressable, ScrollView, View } from "react-native";
 import { router, useLocalSearchParams } from "expo-router";
 import { SafeAreaView } from "react-native-safe-area-context";
-import { Store } from "lucide-react-native";
 import { AppText } from "@/components/AppText";
 import { BackButton } from "@/components/BackButton";
 import { Button } from "@/components/Button";
 import { TextField } from "@/components/TextField";
-import { colors } from "@/constants/colors";
 import { useOrientation } from "@/lib/orientation";
 import { useSession } from "@/store/session";
 
@@ -50,9 +48,7 @@ export default function LoginScreen() {
       <KeyboardAvoidingView behavior="padding" className="flex-1">
         <ScrollView contentContainerClassName="flex-grow items-center justify-center px-6 py-8" keyboardShouldPersistTaps="handled">
           <View className="w-full max-w-sm">
-            <View className="mb-4 h-16 w-16 items-center justify-center self-center rounded-3xl bg-brand-soft">
-              <Store size={30} color={colors.brand} />
-            </View>
+            <Image source={require("../../assets/logo-mark.png")} className="mb-4 h-20 w-[72px] self-center" resizeMode="contain" />
             <AppText variant="heading" className="text-center text-2xl">
               {isResetPin ? "Lupa PIN" : "Login Toko"}
             </AppText>

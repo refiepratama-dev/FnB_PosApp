@@ -1,5 +1,5 @@
 import { useMemo, useState } from "react";
-import { FlatList, Pressable, View, useWindowDimensions } from "react-native";
+import { Pressable, SectionList, View, useWindowDimensions } from "react-native";
 import { ChevronLeft, ReceiptText } from "lucide-react-native";
 import { AppText } from "@/components/AppText";
 import { Chip } from "@/components/Chip";
@@ -9,10 +9,11 @@ import { QueryState } from "@/components/QueryState";
 import { ScreenHeader } from "@/components/ScreenHeader";
 import { SearchInput } from "@/components/SearchInput";
 import { colors } from "@/constants/colors";
-import { formatRupiah } from "@/lib/format";
+import { formatRupiah, toISODate } from "@/lib/format";
 import { periodRange, todayPeriod } from "@/lib/period";
 import { CancelOrderModal } from "./CancelOrderModal";
 import { OrderDetail } from "./OrderDetail";
+import { groupOrdersByDate } from "./orderGroups";
 import { OrderRow } from "./OrderRow";
 import { useOrders } from "./useOrders";
 
@@ -46,6 +47,9 @@ export default function OrdersScreen() {
           (o.table_number ?? "").toLowerCase() === s),
     );
   }, [orders.data, status, search]);
+
+  // dikelompokkan per tanggal (berguna saat filter minggu / bulan)
+  const sections = useMemo(() => groupOrdersByDate(filtered, toISODate(new Date())), [filtered]);
 
   const paid = (orders.data ?? []).filter((o) => o.status === "paid");
   const omzet = paid.reduce((sum, o) => sum + o.subtotal - o.discount_amount, 0);
@@ -115,9 +119,20 @@ export default function OrdersScreen() {
       ) : filtered.length === 0 ? (
         <EmptyState icon={ReceiptText} title="Belum ada order" description="Order di periode ini akan muncul di sini" />
       ) : (
-        <FlatList
-          data={filtered}
+        <SectionList
+          sections={sections}
           keyExtractor={(o) => o.id}
+          stickySectionHeadersEnabled
+          renderSectionHeader={({ section }) => (
+            <View className="flex-row items-center justify-between gap-3 border-b border-line bg-panel px-5 py-2">
+              <AppText variant="heading" numberOfLines={1} className="flex-1 text-sm">
+                {section.title}
+              </AppText>
+              <AppText variant="muted" className="text-xs">
+                {section.paidCount} order · {formatRupiah(section.omzet)}
+              </AppText>
+            </View>
+          )}
           renderItem={({ item }) => (
             <OrderRow order={item} selected={split && item.id === selectedId} onPress={() => setSelectedId(item.id)} />
           )}

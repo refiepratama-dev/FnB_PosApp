@@ -107,7 +107,7 @@ Kasir boleh melihat laba & harga modal.
 
 ## 14. Notifikasi (prioritas: setelah inti) ✅
 - Push notification **order baru** ke HP owner dengan suara cekring (perlu development build)
-- Saat app terbuka: cekring lewat Realtime (bisa di Expo Go)
+- Saat app terbuka: cekring lewat Realtime
 - Notifikasi lain (stok menipis, laporan harian): tidak ada
 
 ## 15. Setting (prioritas: MVP) ✅

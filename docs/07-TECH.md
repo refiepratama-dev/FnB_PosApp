@@ -8,13 +8,14 @@
 - State: **Zustand** (keranjang, mode kasir/owner, tipe order)
 - Ambil data: **TanStack Query + supabase-js**
 - Form: **React Hook Form + Zod**
-- Grafik laporan: library yang jalan di Expo Go (dipilih saat mengerjakan laporan)
+- Grafik laporan: komponen sendiri (View biasa), tanpa library grafik
 - Suara cekring: `expo-audio` · Getar: `expo-haptics` · Kunci orientasi: `expo-screen-orientation`
 - Package manager: **npm** · **Expo SDK terbaru** saat mulai
 
-## B. Expo Go vs Development Build
-- Development pakai **Expo Go** dulu
-- Pindah ke **development build** (`expo-dev-client`) saat mengerjakan **printer** dan **push notification dengan suara cekring**
+## B. Development Build
+- Development pakai **development build** (`expo-dev-client`), bukan Expo Go, karena ada library native (printer Bluetooth `rn-escpos-printer`)
+- APK development dibuat sekali lewat EAS (`--profile development`), lalu kode dikirim dari laptop lewat `npx expo start`
+- Build ulang hanya kalau ada library native baru atau `app.json` / ikon berubah
 
 ## C. Build & rilis
 - Build APK pakai **EAS Build** (cloud, tidak perlu Mac)
@@ -32,7 +33,7 @@
 - Paket Free selama memungkinkan, upgrade ke berbayar kalau dana cukup
 
 ## F. Koneksi ke toko & keamanan
-- **QR toko** berisi alamat project + public (anon) key Supabase. Discan pakai `expo-camera` (jalan di Expo Go).
+- **QR toko** berisi alamat project + public (anon) key Supabase. Discan pakai `expo-camera`. QR toko baru dibuat dengan `npm run qr-toko`.
 - Data hanya bisa dibaca/ditulis setelah login (RLS: hanya user yang login).
 - Sesi login disimpan di device dan diperpanjang otomatis (login password cukup sekali per device, sampai Logout akun).
 - Mode terakhir (Owner/Kasir) disimpan di device; app dibuka langsung ke mode itu tanpa PIN.

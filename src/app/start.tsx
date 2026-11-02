@@ -1,10 +1,8 @@
-import { View } from "react-native";
+import { Image, View } from "react-native";
 import { router } from "expo-router";
 import { SafeAreaView } from "react-native-safe-area-context";
-import { Store } from "lucide-react-native";
 import { AppText } from "@/components/AppText";
 import { Button } from "@/components/Button";
-import { colors } from "@/constants/colors";
 import { useOrientation } from "@/lib/orientation";
 import { useSession } from "@/store/session";
 
@@ -23,10 +21,7 @@ export default function StartScreen() {
     <SafeAreaView className="flex-1 bg-white">
       <View className="flex-1 items-center justify-center px-6">
         <View className="w-full max-w-sm items-center">
-          {/* TODO: ganti dengan logo toko saat logo sudah ada */}
-          <View className="mb-4 h-20 w-20 items-center justify-center rounded-3xl bg-brand-soft">
-            <Store size={36} color={colors.brand} />
-          </View>
+          <Image source={require("../../assets/logo-mark.png")} className="mb-4 h-24 w-[86px]" resizeMode="contain" />
           <AppText variant="heading" className="text-center text-3xl">
             {storeName || "TemanPOS"}
           </AppText>

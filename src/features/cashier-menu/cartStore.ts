@@ -114,7 +114,17 @@ export const useCart = create<CartState>((set, get) => ({
   setOrderType: (orderType) => set({ orderType }),
   setField: (field, value) => set({ [field]: value } as Partial<CartState>),
   setOjolProvider: (ojolProvider) => set({ ojolProvider }),
-  setMember: (member) => set({ member }),
+  // Pilih member -> nama pelanggan otomatis diganti nama member (walau sudah diketik).
+  // Hapus member -> nama pelanggan ikut dikosongkan kalau masih nama member tadi.
+  setMember: (member) =>
+    set((state) => ({
+      member,
+      customerName: member
+        ? member.name
+        : state.member && state.customerName.trim() === state.member.name
+          ? ""
+          : state.customerName,
+    })),
   setDiscount: (discountPercent) => set({ discountPercent: Math.min(100, Math.max(0, discountPercent)) }),
   reset: () => set({ ...initial, orderType: get().orderType }), // tipe order terakhir dipertahankan
 }));

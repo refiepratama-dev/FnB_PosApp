@@ -181,7 +181,7 @@ export function OrderPanel({
         <SmallInput
           value={cart.customerName}
           onChangeText={(t) => cart.setField("customerName", t)}
-          placeholder="Nama pelanggan (opsional)"
+          placeholder="Nama pelanggan / opsional"
         />
 
         {cart.orderType === "dine_in" ? (

@@ -52,7 +52,7 @@ export default function ConnectScreen() {
       <KeyboardAvoidingView behavior="padding" className="flex-1">
       <ScrollView contentContainerClassName="flex-grow items-center justify-center px-6 py-8" keyboardShouldPersistTaps="handled">
         <View className="w-full max-w-md items-center">
-          <Image source={require("../../assets/logo.png")} className="mb-6 h-[143px] w-[180px]" resizeMode="contain" />
+          <Image source={require("../../assets/logo.png")} className="mb-6 h-[132px] w-[180px]" resizeMode="contain" />
           <AppText variant="heading" className="text-2xl">
             Hubungkan ke Toko
           </AppText>

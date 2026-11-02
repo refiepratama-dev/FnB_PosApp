@@ -2,15 +2,17 @@ import { ActivityIndicator, Pressable, type PressableProps } from "react-native"
 import { AppText } from "./AppText";
 import { colors } from "@/constants/colors";
 
-type Variant = "action" | "brand" | "outline";
+type Variant = "pay" | "action" | "brand" | "outline";
 
 const containerClass: Record<Variant, string> = {
-  action: "bg-action", // merah: Bayar, Lunas, Simpan
+  pay: "bg-success", // hijau: Bayar, Lunas, Simpan order
+  action: "bg-action", // merah: Batalkan, hapus
   brand: "bg-brand", // biru: aksi utama non-transaksi
   outline: "bg-white border border-brand",
 };
 
 const textClass: Record<Variant, string> = {
+  pay: "text-white",
   action: "text-white",
   brand: "text-white",
   outline: "text-brand",

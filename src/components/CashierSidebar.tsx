@@ -1,4 +1,4 @@
-import { Pressable, ScrollView, View } from "react-native";
+import { Image, Pressable, ScrollView, View } from "react-native";
 import { router, usePathname, type Href } from "expo-router";
 import { SafeAreaView } from "react-native-safe-area-context";
 import {
@@ -34,24 +34,27 @@ function SidebarButton({
   label,
   icon: Icon,
   active = false,
+  danger = false,
   onPress,
 }: {
   label: string;
   icon: LucideIcon;
   active?: boolean;
+  danger?: boolean;
   onPress: () => void;
 }) {
+  const iconColor = active ? colors.accent : danger ? colors.action : colors.inkMuted;
   return (
     <Pressable
       onPress={onPress}
       className={`h-11 flex-row items-center gap-3 rounded-full px-4 ${
-        active ? "bg-brand-soft" : "active:bg-panel"
+        active ? "bg-accent-soft" : "active:bg-panel"
       }`}
     >
-      <Icon size={20} color={active ? colors.brand : colors.inkMuted} />
+      <Icon size={20} color={iconColor} />
       <AppText
         numberOfLines={1}
-        className={`flex-1 text-sm ${active ? "font-heading text-brand" : "text-ink-muted"}`}
+        className={`flex-1 text-sm ${active ? "font-heading text-accent-ink" : danger ? "text-action" : "text-ink-muted"}`}
       >
         {label}
       </AppText>
@@ -71,8 +74,15 @@ export function CashierSidebar() {
 
   return (
     <SafeAreaView edges={["top", "bottom", "left"]} className="w-48 border-r border-line bg-white">
+      {/* Logo */}
+      <View className="h-16 flex-row items-center gap-2.5 px-4">
+        <Image source={require("../../assets/logo-mark.png")} className="h-8 w-8" resizeMode="contain" />
+        <AppText variant="heading" className="text-lg text-navy">
+          Teman<AppText variant="heading" className="text-lg text-brand">POS</AppText>
+        </AppText>
+      </View>
       {/* ScrollView supaya tetap muat di HP landscape yang layarnya pendek */}
-      <ScrollView contentContainerClassName="gap-1 px-3 py-3">
+      <ScrollView contentContainerClassName="gap-1 px-3 pb-3">
         {ITEMS.map((item) => (
           <SidebarButton
             key={item.label}
@@ -85,8 +95,8 @@ export function CashierSidebar() {
       </ScrollView>
 
       <View className="gap-1 border-t border-line px-3 py-3">
-        <SidebarButton label="Masuk Owner" icon={ShieldCheck} onPress={() => router.push("/pin")} />
-        <SidebarButton label="Keluar" icon={LogOut} onPress={exit} />
+        <SidebarButton label="Mode Owner" icon={ShieldCheck} onPress={() => router.push("/pin")} />
+        <SidebarButton label="Keluar" icon={LogOut} danger onPress={exit} />
       </View>
     </SafeAreaView>
   );

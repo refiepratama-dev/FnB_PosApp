@@ -17,13 +17,15 @@
 
 ## B. Branding
 6. Sudah ada logo & nama brand? (lampirkan file)
-   Jawaban: Nama **TemanPOS**. Logo belum ada, menyusul (sementara pakai teks/placeholder).
+   Jawaban: Nama **TemanPOS**. Logo: huruf **T** dengan daun hijau (kiri), daun oranye (kanan), batang biru. File: `assets/logo-mark.png` (logo saja), `assets/logo.png` (logo + tulisan), ikon app & splash di `assets/`.
 7. Warna utama (hex kalau ada) dan nuansa yang diinginkan?
-   Jawaban: Minimalis, modern, dominan putih. Merah mengikuti **tombol "Checkout" di gambar referensi** (merah terang, perkiraan `#EE2A24`, finalkan saat coding). Biru di referensi: **dipakai juga**. Palet: **putih + merah + biru**, sesuai gambar referensi.
-   Pembagian peran (usulan, mengikuti referensi):
-   - **Biru** (perkiraan `#1A4FE8`): warna brand & pilihan aktif. Item sidebar/navbar aktif, chip kategori terpilih, tab filter aktif, link, tombol sekunder.
-   - **Merah** (perkiraan `#EE2A24`): aksi transaksi & penanda penting. Tombol Bayar / Lunas / Simpan order, badge jumlah keranjang, label diskon, label Habis, Batalkan.
-   - **Putih** dominan untuk background & kartu, abu muda untuk panel & garis.
+   Jawaban: Minimalis, modern, dominan putih. **Warna diambil dari logo** (desain v2, November 2026). Pembagian peran:
+   - **Biru** `#006DB0` (`brand`): tombol utama, pilihan aktif (segmen tipe order, kartu menu di keranjang), link.
+   - **Oranye** `#FE801A` (`accent`): menu sidebar/navbar yang sedang dibuka, chip kategori/filter terpilih, badge jumlah keranjang, label diskon. Teks oranye pakai `#A84A06` (`accent-ink`) supaya terbaca.
+   - **Hijau** `#067D1E` (`success`): tombol Bayar / Lunas / Simpan order, status Lunas, laba positif. Hijau daun `#09AA29` hanya untuk ikon.
+   - **Merah** `#D92D20` (`action`): hapus, batal, habis, pesan error.
+   - **Navy** `#0B2545`: judul besar. Teks `#101828`, teks pudar `#667085`, panel `#F5F6F8`, garis `#E4E7EC`.
+   - Putih dominan untuk background & kartu.
 8. Font pilihan (atau terserah)?
    Jawaban: **DM Sans** (judul Bold, teks Medium), sama seperti app laundry. Dipasang via `@expo-google-fonts/dm-sans`.
 9. Mode tampilan:

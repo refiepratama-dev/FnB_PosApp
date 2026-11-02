@@ -84,7 +84,7 @@ export function OptionModal({
           </View>
           <Button
             title={missing.length ? `Pilih ${missing[0].name}` : `Tambah • ${formatRupiah(unitPrice * qty)}`}
-            variant="action"
+            variant="brand"
             disabled={missing.length > 0}
             className="flex-1"
             onPress={() => onAdd(chosen, note, qty)}

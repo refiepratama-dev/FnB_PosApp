@@ -16,7 +16,7 @@ import { KpiCard } from "@/features/reports/KpiCard";
 const SHORTCUTS: { label: string; href: Href; icon: LucideIcon; tint: string; color: string }[] = [
   { label: "Stok", href: "/owner/stock", icon: Package, tint: "bg-brand-soft", color: colors.brand },
   { label: "Pengeluaran", href: "/owner/expenses", icon: Wallet, tint: "bg-action-soft", color: colors.action },
-  { label: "Member", href: "/owner/members", icon: Users, tint: "bg-success/10", color: colors.success },
+  { label: "Member", href: "/owner/members", icon: Users, tint: "bg-success-soft", color: colors.successLeaf },
 ];
 
 /**

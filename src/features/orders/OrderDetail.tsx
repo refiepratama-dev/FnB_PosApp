@@ -58,7 +58,7 @@ export function OrderDetail({ order, onCancel }: { order: OrderWithItems; onCanc
           <AppText variant="heading" className="text-2xl text-brand">
             {order.order_number}
           </AppText>
-          <View className={`rounded-full px-3 py-1 ${cancelled ? "bg-action-soft" : "bg-success/10"}`}>
+          <View className={`rounded-full px-3 py-1 ${cancelled ? "bg-action-soft" : "bg-success-soft"}`}>
             <AppText className={`font-heading text-xs ${cancelled ? "text-action" : "text-success"}`}>
               {cancelled ? "DIBATALKAN" : "LUNAS"}
             </AppText>

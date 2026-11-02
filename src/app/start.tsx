@@ -21,15 +21,15 @@ export default function StartScreen() {
     <SafeAreaView className="flex-1 bg-white">
       <View className="flex-1 items-center justify-center px-6">
         <View className="w-full max-w-sm items-center">
-          <Image source={require("../../assets/logo-mark.png")} className="mb-4 h-24 w-[86px]" resizeMode="contain" />
-          <AppText variant="heading" className="text-center text-3xl">
+          <Image source={require("../../assets/logo-mark.png")} className="mb-4 h-24 w-24" resizeMode="contain" />
+          <AppText variant="heading" className="text-center text-3xl text-navy">
             {storeName || "TemanPOS"}
           </AppText>
           <AppText variant="muted" className="mb-10 mt-1">
             TemanPOS
           </AppText>
 
-          <Button title="Masuk sebagai Kasir" variant="action" className="mb-3 w-full" onPress={enterCashier} />
+          <Button title="Masuk sebagai Kasir" variant="brand" className="mb-3 w-full" onPress={enterCashier} />
           <Button title="Masuk sebagai Owner" variant="outline" className="w-full" onPress={() => router.push("/pin")} />
         </View>
       </View>

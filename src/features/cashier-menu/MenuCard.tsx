@@ -4,8 +4,8 @@ import { formatRupiah } from "@/lib/format";
 import type { MenuItem } from "@/types/database";
 
 // Warna kotak inisial untuk menu tanpa foto
-const TILE_COLORS = ["bg-brand-soft", "bg-action-soft", "bg-panel"];
-const TEXT_COLORS = ["text-brand", "text-action", "text-ink-muted"];
+const TILE_COLORS = ["bg-brand-soft", "bg-accent-soft", "bg-panel"];
+const TEXT_COLORS = ["text-brand", "text-accent-ink", "text-ink-muted"];
 
 function initials(name: string) {
   return name
@@ -61,8 +61,8 @@ export function MenuCard({
         )}
 
         {qtyInCart > 0 ? (
-          <View className="absolute right-2 top-2 h-8 min-w-8 items-center justify-center rounded-full bg-action px-2">
-            <AppText variant="heading" className="text-sm text-white">
+          <View className="absolute right-2 top-2 h-8 min-w-8 items-center justify-center rounded-full bg-accent px-2">
+            <AppText variant="heading" className="text-sm text-ink">
               {qtyInCart}
             </AppText>
           </View>

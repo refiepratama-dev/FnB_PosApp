@@ -62,7 +62,7 @@ export function PaymentModal({
       footer={
         <Button
           title={isOjol ? "Simpan" : "Lunas"}
-          variant="action"
+          variant="pay"
           loading={saving}
           onPress={() => (isOjol ? onPay("ojol", source) : onPay(method))}
         />

@@ -104,7 +104,7 @@ export function ExpenseFormModal({
       footer={
         <View>
           {error ? <AppText className="mb-3 text-center text-sm text-action">{error}</AppText> : null}
-          <Button title="Simpan" variant="action" loading={save.isPending} disabled={remove.isPending} onPress={submit} />
+          <Button title="Simpan" variant="brand" loading={save.isPending} disabled={remove.isPending} onPress={submit} />
         </View>
       }
     >

@@ -15,7 +15,7 @@ const variantColor: Record<Variant, string> = {
 };
 
 // Kalau className sudah berisi warna teks (misal text-brand), warna bawaan variant tidak dipakai
-const COLOR_CLASS = /(^|\s)text-(ink|ink-muted|brand|action|success|white|line|panel)(\s|$)/;
+const COLOR_CLASS = /(^|\s)text-(ink|ink-muted|brand|brand-strong|accent|accent-ink|action|success|success-leaf|navy|white|line|panel)(\s|$)/;
 
 /**
  * Pakai <AppText> sebagai pengganti <Text> supaya font DM Sans selalu terpasang.

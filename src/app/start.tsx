@@ -3,6 +3,7 @@ import { router } from "expo-router";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { AppText } from "@/components/AppText";
 import { Button } from "@/components/Button";
+import { ShieldCheck, UtensilsCrossed } from "lucide-react-native";
 import { useOrientation } from "@/lib/orientation";
 import { useSession } from "@/store/session";
 
@@ -29,8 +30,8 @@ export default function StartScreen() {
             TemanPOS
           </AppText>
 
-          <Button title="Masuk sebagai Kasir" variant="brand" className="mb-3 w-full" onPress={enterCashier} />
-          <Button title="Masuk sebagai Owner" variant="outline" className="w-full" onPress={() => router.push("/pin")} />
+          <Button title="Masuk sebagai Kasir" variant="brand" icon={UtensilsCrossed} className="mb-3 w-full" onPress={enterCashier} />
+          <Button title="Masuk sebagai Owner" variant="outline" icon={ShieldCheck} className="w-full" onPress={() => router.push("/pin")} />
         </View>
       </View>
     </SafeAreaView>

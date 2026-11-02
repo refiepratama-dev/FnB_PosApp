@@ -1,6 +1,7 @@
 import { ActivityIndicator, Pressable, type PressableProps } from "react-native";
 import { AppText } from "./AppText";
 import { colors } from "@/constants/colors";
+import type { LucideIcon } from "lucide-react-native";
 
 type Variant = "pay" | "action" | "brand" | "outline";
 
@@ -23,25 +24,30 @@ export function Button({
   title,
   variant = "brand",
   loading = false,
+  icon: Icon,
   disabled,
   className = "",
   ...props
-}: PressableProps & { title: string; variant?: Variant; loading?: boolean; className?: string }) {
+}: PressableProps & { title: string; variant?: Variant; loading?: boolean; icon?: LucideIcon; className?: string }) {
+  const contentColor = variant === "outline" ? colors.brand : colors.white;
   const isDisabled = disabled || loading;
   return (
     <Pressable
       disabled={isDisabled}
-      className={`h-14 items-center justify-center rounded-full px-6 active:opacity-80 ${containerClass[variant]} ${
+      className={`h-14 flex-row items-center justify-center gap-2 rounded-full px-6 active:opacity-80 ${containerClass[variant]} ${
         isDisabled ? "opacity-50" : ""
       } ${className}`}
       {...props}
     >
       {loading ? (
-        <ActivityIndicator color={variant === "outline" ? colors.brand : colors.white} />
+        <ActivityIndicator color={contentColor} />
       ) : (
-        <AppText variant="heading" className={`text-base ${textClass[variant]}`}>
-          {title}
-        </AppText>
+        <>
+          {Icon ? <Icon size={20} color={contentColor} /> : null}
+          <AppText variant="heading" className={`text-base ${textClass[variant]}`}>
+            {title}
+          </AppText>
+        </>
       )}
     </Pressable>
   );

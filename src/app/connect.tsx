@@ -6,6 +6,7 @@ import { CameraView, useCameraPermissions } from "expo-camera";
 import { AppText } from "@/components/AppText";
 import { Button } from "@/components/Button";
 import { colors } from "@/constants/colors";
+import { QrCode } from "lucide-react-native";
 import { devConnection, parseStoreCode, testConnection, type StoreConnection } from "@/lib/connection";
 import { useOrientation } from "@/lib/orientation";
 import { useSession } from "@/store/session";
@@ -70,7 +71,13 @@ export default function ConnectScreen() {
               />
             </View>
           ) : (
-            <Button title="Izinkan Kamera untuk Scan QR" className="mb-4 w-full" onPress={requestPermission} />
+            <>
+              <View className="mb-5 aspect-square w-full max-w-[220px] items-center justify-center gap-3 rounded-3xl bg-brand-soft">
+                <QrCode size={64} color={colors.brand} />
+                <AppText className="text-center text-xs text-brand-strong">Kamera dipakai untuk scan QR</AppText>
+              </View>
+              <Button title="Izinkan Kamera untuk Scan QR" className="mb-4 w-full" onPress={requestPermission} />
+            </>
           )}
 
           {error ? <AppText className="mb-4 text-center text-sm text-action">{error}</AppText> : null}

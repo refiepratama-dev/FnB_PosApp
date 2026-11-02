@@ -3,8 +3,9 @@ import { Image, View } from "react-native";
 import { AppText } from "@/components/AppText";
 
 // Warna lembut untuk kotak inisial (menu tanpa foto). Dipilih berdasarkan nama, jadi selalu sama.
-const SWATCHES = ["#E8EEFD", "#FDEAEA", "#E7F6EC", "#FEF3C7", "#F3E8FF", "#E0F2FE"];
-const SWATCH_TEXT = ["#1A4FE8", "#EE2A24", "#16A34A", "#B45309", "#7E22CE", "#0369A1"];
+// Biru, oranye, hijau (warna logo), plus abu.
+const SWATCHES = ["#E3F1FA", "#FFF1E5", "#E6F6EA", "#F2F4F7"];
+const SWATCH_TEXT = ["#006DB0", "#A84A06", "#067D1E", "#667085"];
 
 function hash(text: string) {
   let value = 0;

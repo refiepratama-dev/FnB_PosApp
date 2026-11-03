@@ -25,7 +25,7 @@ const METHOD_LABEL: Record<Expense["method"], string> = { cash: "Tunai", transfe
 /** Kartu ringkasan merah teks putih (pengeluaran = uang keluar). */
 function SummaryCard({ label, value }: { label: string; value: string }) {
   return (
-    <View className="rounded-2xl bg-action px-4 py-3">
+    <View className="flex-1 rounded-2xl bg-action px-4 py-3">
       <AppText variant="muted" className="text-xs text-white opacity-80">
         {label}
       </AppText>
@@ -142,7 +142,10 @@ export default function ExpensesScreen() {
             setSelectedId(null);
           }}
         />
-        <SummaryCard label="Total Pengeluaran" value={formatRupiah(total)} />
+        <View className="flex-row gap-3">
+          <SummaryCard label="Jumlah Transaksi" value={String(expenses.length)} />
+          <SummaryCard label="Total Pengeluaran" value={formatRupiah(total)} />
+        </View>
         <SearchInput value={search} onChangeText={setSearch} placeholder="Cari keterangan pengeluaran" />
         <View className="flex-row gap-2">
           <Chip label="Semua" active={method === "all"} onPress={() => setMethod("all")} />

@@ -38,6 +38,8 @@ export type MenuItem = {
   id: string;
   category_id: string | null;
   name: string;
+  /** keterangan opsional, misal "Isi 2 potong, pedas sedang" */
+  description: string | null;
   price: number;
   cost_price: number | null;
   image_url: string | null;

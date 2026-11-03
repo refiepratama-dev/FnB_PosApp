@@ -28,7 +28,9 @@ Buka **SQL Editor** → **New query**, lalu jalankan **semua** file di
 1. `20261031000000_init.sql`
 2. `20261101000000_realtime_menu.sql`
 3. `20261102000000_realtime_expenses.sql`
-4. (file migration baru lainnya, kalau ada)
+4. `20261102000001_optional_table_number.sql`
+5. `20261104000000_menu_description.sql`
+6. (file migration baru lainnya, kalau ada)
 
 Setiap file: salin semua isinya → tempel → **Run** → pastikan muncul *Success*.
 

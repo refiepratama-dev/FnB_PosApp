@@ -92,6 +92,11 @@ export function OptionModal({
         </View>
       }
     >
+      {item.description ? (
+        <AppText variant="muted" className="mb-4 text-sm">
+          {item.description}
+        </AppText>
+      ) : null}
       {item.option_groups.map((group) => (
         <View key={group.id} className="mb-5">
           <View className="mb-2 flex-row items-center justify-between">

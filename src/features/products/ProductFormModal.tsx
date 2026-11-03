@@ -15,7 +15,7 @@ import { MenuThumb } from "@/components/MenuThumb";
 import { useArchiveMenuItem, useSaveMenuItem } from "./useProducts";
 
 /**
- * Form tambah / ubah menu: nama, harga, HPP, kategori, foto.
+ * Form tambah / ubah menu: nama, keterangan (opsional), harga, HPP, kategori, foto.
  * item = null  -> menu baru
  * item = menu  -> ubah menu itu (ada tombol Hapus; di database cuma diarsipkan supaya riwayat order aman)
  */
@@ -38,6 +38,7 @@ export function ProductFormModal({
   const archive = useArchiveMenuItem();
 
   const [name, setName] = useState("");
+  const [description, setDescription] = useState("");
   const [priceText, setPriceText] = useState("");
   const [costText, setCostText] = useState("");
   const [categoryId, setCategoryId] = useState<string | null>(null);
@@ -49,6 +50,7 @@ export function ProductFormModal({
   useEffect(() => {
     if (!visible) return;
     setName(item?.name ?? "");
+    setDescription(item?.description ?? "");
     setPriceText(item ? String(item.price) : "");
     setCostText(item?.cost_price != null ? String(item.cost_price) : "");
     setCategoryId(item ? item.category_id : defaultCategoryId);
@@ -90,6 +92,7 @@ export function ProductFormModal({
         id: item?.id,
         values: {
           name: name.trim(),
+          description: description.trim() || null,
           price,
           cost_price: costText.trim() === "" ? null : cost,
           category_id: categoryId,
@@ -167,6 +170,16 @@ export function ProductFormModal({
       </View>
 
       <TextField label="Nama menu" value={name} onChangeText={setName} placeholder="Contoh: Es Kopi Susu" className="mb-4" />
+
+      <TextField
+        label="Keterangan (opsional)"
+        value={description}
+        onChangeText={setDescription}
+        placeholder="Contoh: Isi 2 potong, pedas sedang"
+        multiline
+        maxLength={150}
+        className="mb-4"
+      />
 
       <View className="mb-4">
         <TextField

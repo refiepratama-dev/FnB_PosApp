@@ -22,7 +22,7 @@ function colorIndex(name: string) {
   return hash % TILE_COLORS.length;
 }
 
-/** Kartu menu di grid kasir: foto, nama, harga, badge jumlah di keranjang, label Habis / sisa stok. */
+/** Kartu menu di grid kasir: foto, nama, keterangan (kalau ada), harga, badge jumlah di keranjang, label Habis / sisa stok. */
 export function MenuCard({
   item,
   price,
@@ -85,6 +85,11 @@ export function MenuCard({
         <AppText numberOfLines={2} className="min-h-10 text-sm leading-5">
           {item.name}
         </AppText>
+        {item.description ? (
+          <AppText variant="muted" numberOfLines={2} className="text-[11px] leading-4">
+            {item.description}
+          </AppText>
+        ) : null}
         <AppText variant="heading" className="text-sm">
           {formatRupiah(price)}
         </AppText>

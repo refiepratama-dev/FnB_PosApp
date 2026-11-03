@@ -74,7 +74,7 @@ Sumber kebenaran: `supabase/migrations/`. Tabel ini ringkasannya.
 | `store_settings` | 1 baris: profil toko (diisi tim), pajak, service, persen ojol per provider, footer struk, ukuran kertas, zona waktu |
 | `owner_pin` | Hash PIN owner (awal `0000`). **Tidak bisa dibaca app**, hanya lewat fungsi `verify_owner_pin`, `change_owner_pin`, `reset_owner_pin` |
 | `categories` | Kategori menu |
-| `menu_items` | Nama, harga, HPP, foto, kategori, `track_stock`, `stock_qty`, arsip |
+| `menu_items` | Nama, keterangan (opsional), harga, HPP, foto, kategori, `track_stock`, `stock_qty`, arsip |
 | `option_groups` | Grup pilihan per menu. `type = variant` (pilih tepat 1, misal Ukuran/Saus) atau `addon` (topping, pilih 0..`max_select`) |
 | `options` | Pilihan dalam grup + `price_delta` (tambahan harga) |
 | `members` | Nama, no HP (unik) |

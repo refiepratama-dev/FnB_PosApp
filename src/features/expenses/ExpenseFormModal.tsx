@@ -12,12 +12,12 @@ import { formatDate, formatTime } from "@/lib/format";
 import { pickImage } from "@/lib/images";
 import type { Expense } from "@/types/database";
 import { amountError, digitsOnly, groupThousands, parseAmount } from "./amount";
-import { useDeleteExpense, useSaveExpense } from "./useExpenses";
+import { useSaveExpense } from "./useExpenses";
 
 /**
  * Form tambah (expense = null) atau ubah pengeluaran:
  * keterangan, nominal, metode (Tunai/Transfer), foto nota (opsional, dari galeri).
- * Tanggal otomatis (hari ini) dan tidak diubah saat edit. Ada tombol Hapus saat edit.
+ * Tanggal otomatis (hari ini) dan tidak diubah saat edit. Tombol Hapus ada di detail pengeluaran.
  */
 export function ExpenseFormModal({
   visible,
@@ -29,7 +29,6 @@ export function ExpenseFormModal({
   onClose: () => void;
 }) {
   const save = useSaveExpense();
-  const remove = useDeleteExpense();
 
   const [description, setDescription] = useState("");
   const [amountText, setAmountText] = useState(""); // hanya angka
@@ -80,22 +79,6 @@ export function ExpenseFormModal({
     );
   }
 
-  function confirmDelete() {
-    if (!expense) return;
-    Alert.alert("Hapus pengeluaran?", `"${expense.description}" dihapus permanen dan tidak dihitung lagi di laporan.`, [
-      { text: "Batal", style: "cancel" },
-      {
-        text: "Hapus",
-        style: "destructive",
-        onPress: () =>
-          remove.mutate(expense, {
-            onSuccess: onClose,
-            onError: (e) => Alert.alert("Gagal menghapus", errorMessage(e)),
-          }),
-      },
-    ]);
-  }
-
   return (
     <AppModal
       visible={visible}
@@ -104,7 +87,7 @@ export function ExpenseFormModal({
       footer={
         <View>
           {error ? <AppText className="mb-3 text-center text-sm text-action">{error}</AppText> : null}
-          <Button title="Simpan" variant="brand" loading={save.isPending} disabled={remove.isPending} onPress={submit} />
+          <Button title="Simpan" variant="brand" loading={save.isPending} onPress={submit} />
         </View>
       }
     >
@@ -176,20 +159,9 @@ export function ExpenseFormModal({
       </AppText>
 
       {expense ? (
-        <>
-          <AppText variant="muted" className="mt-5 text-center text-xs">
-            Dicatat {formatDate(expense.created_at)}, {formatTime(expense.created_at)}
-          </AppText>
-          <Button
-            title="Hapus Pengeluaran"
-            variant="action"
-            icon={Trash2}
-            className="mt-4"
-            loading={remove.isPending}
-            disabled={save.isPending}
-            onPress={confirmDelete}
-          />
-        </>
+        <AppText variant="muted" className="mt-5 text-center text-xs">
+          Dicatat {formatDate(expense.created_at)}, {formatTime(expense.created_at)}
+        </AppText>
       ) : null}
     </AppModal>
   );

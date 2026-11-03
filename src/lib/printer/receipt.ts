@@ -7,7 +7,7 @@ import { CMD, center, charsPerLine, divider, row, wrap, type PaperSize } from ".
 export type ReceiptStore = Pick<StoreSettings, "name" | "address" | "phone" | "receipt_footer" | "paper_size">;
 
 /** Kepala struk: nama toko (besar), alamat, no HP. */
-function header(store: ReceiptStore, width: number): string[] {
+export function header(store: ReceiptStore, width: number): string[] {
   const out: string[] = [CMD.alignCenter];
   // huruf besar = lebar 2x, jadi muatnya setengah
   for (const line of wrap(store.name, Math.floor(width / 2))) {
@@ -106,7 +106,7 @@ export function buildTestPage(store: Pick<ReceiptStore, "name">, paper: PaperSiz
  */
 const ALIGN_COMMANDS: string[] = [CMD.alignLeft, CMD.alignCenter, CMD.alignRight];
 
-function joinLines(lines: string[]): string {
+export function joinLines(lines: string[]): string {
   let text = "";
   let pending = "";
   for (const line of lines) {

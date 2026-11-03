@@ -35,6 +35,12 @@ export function formatDateTime(date: Date | string): string {
   return `${formatDate(date)}, ${formatTime(date)}`;
 }
 
+/** Date -> "31 Oktober 2026" (nama bulan lengkap, untuk dokumen seperti PDF laporan) */
+export function formatDateLong(date: Date | string): string {
+  const d = typeof date === "string" ? new Date(date) : date;
+  return `${d.getDate()} ${MONTHS_FULL[d.getMonth()]} ${d.getFullYear()}`;
+}
+
 /** Date -> "Oktober 2026" */
 export function formatMonth(date: Date): string {
   return `${MONTHS_FULL[date.getMonth()]} ${date.getFullYear()}`;

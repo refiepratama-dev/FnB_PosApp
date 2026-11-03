@@ -1,25 +1,24 @@
 import { useMemo, useState } from "react";
 import { RefreshControl, ScrollView, View } from "react-native";
+import { Printer } from "lucide-react-native";
 import { AppText } from "@/components/AppText";
+import { HeaderAction } from "@/components/HeaderAction";
 import { PeriodFilter } from "@/components/PeriodFilter";
 import { QueryState } from "@/components/QueryState";
 import { ScreenHeader } from "@/components/ScreenHeader";
-import { OJOL_PROVIDER_LABEL, ORDER_TYPE_LABEL, PAYMENT_METHOD_LABEL } from "@/constants/labels";
+import { PAYMENT_METHOD_LABEL } from "@/constants/labels";
 import { useExpensesRealtime } from "@/features/expenses/useExpenses";
 import { useReportData } from "@/hooks/useReportData";
+import { useStoreSettings } from "@/hooks/useStoreSettings";
 import { formatRupiah } from "@/lib/format";
 import { periodRange, todayPeriod } from "@/lib/period";
 import { buildReport, type OrderTypeKey } from "@/lib/report";
 import type { PaymentMethod } from "@/types/database";
 import { BarChart } from "./BarChart";
 import { KpiCard } from "./KpiCard";
+import { PrintReportModal } from "./PrintReportModal";
+import { reportMeta, TYPE_LABEL } from "./reportExport";
 import { ShareList } from "./ShareList";
-
-const TYPE_LABEL: Record<OrderTypeKey, string> = {
-  dine_in: ORDER_TYPE_LABEL.dine_in,
-  takeaway: ORDER_TYPE_LABEL.takeaway,
-  ...OJOL_PROVIDER_LABEL,
-};
 
 /** "1,2 jt" untuk label singkat di grafik */
 function shortRupiah(value: number) {
@@ -49,6 +48,8 @@ export default function ReportScreen() {
   const [width, setWidth] = useState(0);
   const range = periodRange(period);
   const query = useReportData(range);
+  const storeName = useStoreSettings().data?.name ?? "Toko";
+  const [printOpen, setPrintOpen] = useState(false);
 
   const report = useMemo(
     () => (query.data ? buildReport(query.data.orders, query.data.expenses, period.type, range) : null),
@@ -65,7 +66,10 @@ export default function ReportScreen() {
 
   return (
     <View className="flex-1 bg-panel" onLayout={(e) => setWidth(e.nativeEvent.layout.width)}>
-      <ScreenHeader title="Laporan" />
+      <ScreenHeader
+        title="Laporan"
+        right={report ? <HeaderAction label="Cetak" icon={Printer} variant="outline" onPress={() => setPrintOpen(true)} /> : undefined}
+      />
       <ScrollView
         contentContainerStyle={{ padding: 16, gap }}
         refreshControl={<RefreshControl refreshing={query.isRefetching} onRefresh={() => void query.refetch()} />}
@@ -161,6 +165,17 @@ export default function ReportScreen() {
           </>
         )}
       </ScrollView>
+
+      {report && query.data && printOpen ? (
+        <PrintReportModal
+          visible
+          onClose={() => setPrintOpen(false)}
+          report={report}
+          meta={reportMeta(storeName, period, range)}
+          expenses={query.data.expenses}
+          orders={query.data.orders}
+        />
+      ) : null}
     </View>
   );
 }

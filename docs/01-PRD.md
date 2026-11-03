@@ -67,7 +67,7 @@ Login password cukup sekali per device. Setelah itu layar awal: "Masuk sebagai O
 **Menu Owner (03):** Navbar: Dashboard, Order, Laporan, Menu (kelola produk & harga), Setting (opsional).
 Di Dashboard ada grid shortcut (gaya ikon GoFood/GoSend di app Gojek) untuk akses Stok, Pengeluaran, Member, dll. Owner bisa lihat & kelola semuanya.
 
-**Menu Kasir (03), sidebar kiri:** Menu, Order, Pengeluaran, Stok, Report, Member, Setting.
+**Menu Kasir (03), sidebar kiri:** Menu, Order, Pengeluaran, Stok, Laporan, Member. Di bagian bawah (dipisah garis): Setting, Mode Owner, Keluar.
 - Member: nama + nomor HP. Belum bisa dihubungi via WA (fase berikutnya).
 
 **Fitur (03):**

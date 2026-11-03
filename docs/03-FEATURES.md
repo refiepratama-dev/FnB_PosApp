@@ -86,19 +86,24 @@ Laporan owner dan report kasir **sama isinya**.
 Kasir boleh melihat laba & harga modal.
 
 **Tampilan (keputusan desain):**
-- **Kartu angka (KPI):** Omzet, Jumlah Transaksi, Rata-rata per Transaksi, Laba Sederhana, Total Pengeluaran, Order Dibatalkan
+- **Kartu angka (KPI)**, urutan: Omzet (kartu biru) · Laba Sederhana · HPP · Total Pengeluaran · Jumlah Order · Order Dibatalkan
 - **Grafik batang:** penjualan per hari (mingguan/bulanan) atau per jam (harian)
 - **Grafik batang per jam:** jam ramai
 - **Daftar ranking dengan bar:** menu terlaris (top 5–10)
 - **Bar persentase:** per metode bayar, per tipe pesanan (dine-in/takeaway/tiap provider ojol)
 
-- Export Excel/PDF: **tidak ada**
+- **Cetak laporan:** tombol **Cetak** di kanan judul "Laporan". Mencetak periode yang sedang dipilih (harian / tanggal / mingguan / bulanan), dengan 2 pilihan:
+  - **Struk**: ringkasan (omzet, HPP, pengeluaran, laba, jumlah order, dibatalkan), metode bayar, tipe pesanan, dan **penjualan per menu (semua menu)** ke printer thermal dari Setting > Printer.
+  - **PDF** (A4): isi lengkap (termasuk 5 menu terlaris & penjualan per jam/hari), **penjualan per menu (semua menu)**, dan daftar pengeluaran, lalu dibuka menu bagikan (simpan ke Files, kirim WhatsApp, Drive). Nama file: `Laporan_NamaToko_2026-11-03.pdf` (harian), `Laporan_NamaToko_2026-11-02_sd_2026-11-08.pdf` (mingguan), `Laporan_NamaToko_2026-11.pdf` (bulanan).
+  - **Penjualan per menu** berisi **semua menu aktif**, terjual maupun tidak (0 porsi), dikelompokkan per kategori (paling laku di atas). Menu yang terjual tapi sudah dihapus masuk grup "Menu dihapus".
+- Export Excel: **tidak ada**
 
-**Dashboard owner:** ringkasan hari ini (omzet, jumlah order, laba), order masuk realtime + cekring, grid shortcut (Stok, Pengeluaran, Member, dll)
+**Dashboard owner:** ringkasan hari ini dalam kartu: Omzet (biru) & Laba Sederhana, Tunai & QRIS, HPP & Jumlah Order. Lalu akses cepat (kartu terpisah: Stok, Pengeluaran, Member), **4 order terbaru** (realtime + cekring), dan **4 pengeluaran terbaru**.
 
 ## 12. Pengeluaran (prioritas: MVP) ✅
 - Data: tanggal (otomatis), keterangan, nominal, metode (Tunai/Transfer), foto nota (opsional). **Tanpa kategori.**
 - Kasir & owner bisa **tambah, edit, hapus**
+- Tampilan seperti halaman Order: kartu merah **Jumlah Transaksi** & **Total Pengeluaran**, cari keterangan, filter Semua / Tunai / Transfer, daftar dikelompokkan per tanggal. Tablet: daftar + detail berdampingan; HP: tap baris → halaman detail. Tombol **Ubah** & **Hapus** di bawah detail (posisi sama dengan Cetak Ulang & Batalkan di Order).
 - Laporan owner menampilkan **laba sederhana** = omzet − modal (HPP) − pengeluaran
 
 ## 13. Self-order: TIDAK DIBUAT ✅

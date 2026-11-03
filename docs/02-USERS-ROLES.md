@@ -34,7 +34,7 @@
 - **1 akun per toko** (email + password dibuat tim), dengan 2 tampilan akses: Owner & Kasir.
 - Kasir tampil sebagai "Kasir". Owner tampil dengan **nama toko**.
 - **Tidak ada buka/tutup shift.** Kasir langsung bisa transaksi.
-- Bagian bawah sidebar kasir: tombol **Keluar** (kembali ke layar awal) dan **Masuk sebagai Owner** (pakai PIN).
+- Bagian bawah sidebar kasir (dipisah garis): **Setting**, **Mode Owner** (masuk sebagai Owner, pakai PIN), dan **Keluar** (kembali ke layar awal).
 - Owner keluar: tombol **Keluar** kembali ke layar awal (masuk lagi pakai PIN). **Logout akun** penuh ada di Setting (setelah itu harus login pakai password lagi). ✅ disetujui
 
 ### Backend per bisnis

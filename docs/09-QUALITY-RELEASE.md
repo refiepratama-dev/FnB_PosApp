@@ -31,7 +31,12 @@ Unit test perhitungan harga, update OTA, dan tanpa lisensi: ✅ disetujui.
 ## E. Rilis
 - Distribusi: **APK langsung** (build via EAS Build)
 - Versi: `1.0.0`, `1.1.0`, dst + catatan perubahan singkat di GitHub Releases
-- **EAS Update (update OTA)**: perbaikan kecil (tampilan, bug logika) bisa dikirim tanpa install ulang APK. Perubahan native (printer, library baru) tetap perlu APK baru **(usulan)**
+- **EAS Update (update OTA)** ✅ terpasang (`expo-updates`). Tiap profil build punya channel sendiri: `preview`, `development`, `production` (lihat `eas.json`).
+  - Perubahan kode JS (tampilan, bug logika) → kirim tanpa install ulang APK:
+    `eas update --channel preview --platform android --message "isi perubahan"`
+    Di HP: tutup app sampai benar-benar keluar, buka lagi (update diunduh, tampil di pembukaan berikutnya).
+  - Perubahan native (library native baru, ikon, splash, izin, `app.json`) → **naikkan `version` di `app.json`** (misal `1.0.0` → `1.1.0`), lalu build APK baru. `runtimeVersion` mengikuti versi app, jadi APK lama tidak menerima update yang butuh library baru (mencegah app crash).
+  - Selalu pakai `--platform android` (project tidak punya versi web).
 
 ## F. Dokumentasi
 - `README.md`: cara setup project untuk tim

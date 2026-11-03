@@ -63,7 +63,7 @@ Halaman **Order** → pilih order → **Batalkan** → konfirmasi (+ alasan opsi
 
 ## J. Pengeluaran
 Halaman **Pengeluaran** → **+ Tambah** → keterangan, nominal, metode (Tunai/Transfer), foto nota (opsional) → Simpan.
-Daftar pengeluaran per periode (filter sama dengan laporan), bisa edit & hapus.
+Daftar pengeluaran per periode (filter sama dengan laporan), dikelompokkan per tanggal. Tap baris → detail (nominal, keterangan, foto nota) dengan tombol **Ubah** & **Hapus**.
 
 ## K. Stok
 1. Halaman **Stok** → **+ Tambah menu ke stok** → pilih menu satuan → isi jumlah awal.
@@ -72,14 +72,14 @@ Daftar pengeluaran per periode (filter sama dengan laporan), bisa edit & hapus.
 4. Item bisa dikeluarkan dari halaman Stok → menu kembali "selalu tersedia".
 
 ## L. Owner
-- **Dashboard**: ringkasan hari ini (omzet, jumlah order, laba), daftar order masuk realtime + cekring, grid shortcut (Stok, Pengeluaran, Member, dll).
+- **Dashboard**: kartu ringkasan hari ini (omzet, laba, tunai, QRIS, HPP, jumlah order), akses cepat (Stok, Pengeluaran, Member), 4 order terbaru (realtime + cekring), 4 pengeluaran terbaru.
 - **Order**: daftar semua order + filter periode, detail order, cetak ulang struk, batalkan.
-- **Laporan**: filter Hari Ini / Tanggal / Minggu / Bulan + tombol ‹ ›, kartu angka & grafik.
+- **Laporan**: filter Hari Ini / Tanggal / Minggu / Bulan + tombol ‹ ›, kartu angka & grafik. Tombol **Cetak** (kanan atas) → pilih **Struk** (printer thermal) atau **PDF** (simpan / kirim).
 - **Menu**: kelola kategori, item, varian, topping, harga, HPP, foto.
 - **Setting**: pajak & service, persen ojol, printer, footer struk, ubah PIN, QR toko, logout. (Profil toko & password diatur tim, tidak ada di app.)
 
 ## M. Keluar
-- **Kasir**: sidebar bawah → **Keluar** (ke Layar Awal) atau **Masuk sebagai Owner** (PIN).
+- **Kasir**: sidebar bawah → **Keluar** (ke Layar Awal) atau **Mode Owner** (PIN).
 - **Owner**: **Keluar** → Layar Awal (masuk lagi pakai PIN).
 - **Logout akun** (owner & kasir, di Setting) → device terputus → harus login password owner lagi.
 
@@ -97,11 +97,10 @@ Daftar pengeluaran per periode (filter sama dengan laporan), bisa edit & hapus.
 |---------|-----|
 | Menu | Grid menu + kategori + search, ringkasan order di kanan, popup varian/topping, popup bayar, layar Order Selesai |
 | Order | Riwayat order + detail, cetak ulang, batalkan |
-| Pengeluaran | Daftar + form tambah/edit |
+| Pengeluaran | Daftar per tanggal + detail (dua panel di tablet) + form tambah/ubah, hapus dari detail |
 | Stok | Daftar stok + tambah/sesuaikan |
-| Report | Sama dengan laporan owner |
+| Laporan | Sama dengan laporan owner, termasuk tombol Cetak (struk / PDF) |
 | Member | Daftar + form + ringkasan |
-| Setting | Sama dengan owner; Kelola Produk, Ubah PIN & QR toko minta PIN owner |
-| *(bawah)* | Keluar · Masuk sebagai Owner |
+| *(bawah, dipisah garis)* | Setting (sama dengan owner; Kelola Produk, Ubah PIN & QR toko minta PIN owner) · Mode Owner · Keluar |
 
 **Owner (portrait, navbar bawah):** Dashboard (+ grid shortcut ke Stok, Pengeluaran, Member), Order, Laporan, Menu, Setting.

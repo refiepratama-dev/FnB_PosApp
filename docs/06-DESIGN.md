@@ -17,7 +17,7 @@
 
 ## B. Branding
 6. Sudah ada logo & nama brand? (lampirkan file)
-   Jawaban: Nama **TemanPOS**. Logo: huruf **T** dengan daun hijau (kiri), daun oranye (kanan), batang biru. File: `assets/logo-mark.png` (logo saja), `assets/logo.png` (logo + tulisan), ikon app & splash di `assets/`.
+   Jawaban: Nama **TemanPOS**. Logo: huruf **T** dengan daun hijau (kiri), daun oranye (kanan), batang biru. File: `assets/logo-mark.png` (logo saja), `assets/logo.png` (logo + tulisan), ikon app & splash di `assets/`. Splash screen hanya logo T di tengah (tanpa tulisan), karena Android 12+ memotong gambar splash jadi lingkaran.
 7. Warna utama (hex kalau ada) dan nuansa yang diinginkan?
    Jawaban: Minimalis, modern, dominan putih. **Warna diambil dari logo** (desain v2, November 2026). Pembagian peran:
    - **Biru** `#006DB0` (`brand`): tombol utama, pilihan aktif (segmen tipe order, kartu menu di keranjang), link.
@@ -66,6 +66,9 @@
 ## G. Keputusan desain lainnya ✅
 - Panel yang menempel (sidebar, top bar, ringkasan order) dipisah **garis tipis**, tanpa celah/bayangan. Kartu menu rounded dengan bayangan halus.
 - Tombol utama besar, bentuk **pill**.
+- Semua kartu & popup sudut **rounded-2xl** (16 px). Chip, tombol, dan bar progres tetap bulat penuh.
+- Tombol hapus (Hapus Menu / Pengeluaran / Member / Diskon) memakai gaya tombol **Batalkan Order**: merah penuh, teks putih, ikon tempat sampah. Di database menu & kategori tetap diarsipkan (soft delete), tapi di layar tulisannya **Hapus**.
+- Kartu angka penting diberi warna penuh dengan teks putih: **Omzet** biru (Laporan & Dashboard), kartu ringkasan **Pengeluaran** merah.
 - Centang layar **Order Selesai**: **hijau**.
 - Grid menu pakai foto; tanpa foto → kotak warna + inisial nama menu. Kartu: foto, nama, harga, label "Habis".
 - Getar ringan saat item masuk keranjang; cekring saat order dibuat.

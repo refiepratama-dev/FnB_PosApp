@@ -34,6 +34,8 @@ export default function DashboardScreen() {
     [query.data, range.from],
   );
   const recent = (query.data?.orders ?? []).slice(0, 8);
+  const cash = report?.payments.find((p) => p.key === "cash");
+  const qris = report?.payments.find((p) => p.key === "qris");
 
   return (
     <ScrollView
@@ -54,17 +56,25 @@ export default function DashboardScreen() {
             <QueryState query={query} />
           </View>
         ) : (
+          // Urutan: hasil (Omzet, Laba) → uang masuk per metode (Tunai, QRIS) → modal & volume (HPP, Order)
           <View className="gap-3">
             <View className="flex-row gap-3">
               <KpiCard style={{ flex: 1 }} label="Omzet" value={formatRupiah(report.omzet)} tone="highlight" />
+              <KpiCard
+                style={{ flex: 1 }}
+                label="Laba Sederhana"
+                value={formatRupiah(report.profit)}
+                tone={report.profit >= 0 ? "good" : "bad"}
+              />
+            </View>
+            <View className="flex-row gap-3">
+              <KpiCard style={{ flex: 1 }} label="Tunai" value={formatRupiah(cash?.amount ?? 0)}/>
+              <KpiCard style={{ flex: 1 }} label="QRIS" value={formatRupiah(qris?.amount ?? 0)}/>
+            </View>
+            <View className="flex-row gap-3">
+              <KpiCard style={{ flex: 1 }} label="HPP" value={formatRupiah(report.hpp)} />
               <KpiCard style={{ flex: 1 }} label="Jumlah Order" value={String(report.transactions)} />
             </View>
-            <KpiCard
-              label="Laba Sederhana"
-              value={formatRupiah(report.profit)}
-              tone={report.profit >= 0 ? "good" : "bad"}
-              hint={`HPP ${formatRupiah(report.hpp)} · Pengeluaran ${formatRupiah(report.expenses)}`}
-            />
           </View>
         )}
       </View>

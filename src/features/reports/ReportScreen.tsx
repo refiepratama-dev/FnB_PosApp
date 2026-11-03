@@ -83,17 +83,16 @@ export default function ReportScreen() {
             {/* Urutan: hasil utama (Omzet, Laba) → biaya (HPP, Pengeluaran) → volume (Transaksi, Batal).
                 Di HP 2 kolom jadi 3 baris berpasangan. */}
             <View className="flex-row flex-wrap" style={{ gap }}>
-              <KpiCard style={{ width: kpiWidth }} label="Omzet" value={formatRupiah(report.omzet)} tone="brand" hint="Tanpa pajak & service" />
+              <KpiCard style={{ width: kpiWidth }} label="Omzet" value={formatRupiah(report.omzet)} tone="highlight" />
               <KpiCard
                 style={{ width: kpiWidth }}
                 label="Laba Sederhana"
                 value={formatRupiah(report.profit)}
                 tone={report.profit >= 0 ? "good" : "bad"}
-                hint="Omzet − HPP − Pengeluaran"
               />
-              <KpiCard style={{ width: kpiWidth }} label="HPP" value={formatRupiah(report.hpp)} hint="Modal bahan menu terjual" />
+              <KpiCard style={{ width: kpiWidth }} label="HPP" value={formatRupiah(report.hpp)}/>
               <KpiCard style={{ width: kpiWidth }} label="Total Pengeluaran" value={formatRupiah(report.expenses)} />
-              <KpiCard style={{ width: kpiWidth }} label="Jumlah Transaksi" value={String(report.transactions)} />
+              <KpiCard style={{ width: kpiWidth }} label="Jumlah Order" value={String(report.transactions)} />
               <KpiCard
                 style={{ width: kpiWidth }}
                 label="Order Dibatalkan"

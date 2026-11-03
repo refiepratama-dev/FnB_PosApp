@@ -1,12 +1,32 @@
-import { File, Paths } from "expo-file-system";
-import * as Print from "expo-print";
-import * as Sharing from "expo-sharing";
 import { printText } from "@/lib/printer/printer";
 import { buildReportReceipt } from "@/lib/printer/reportReceipt";
 import type { ReceiptStore } from "@/lib/printer/receipt";
 import type { MenuSalesGroup, Report } from "@/lib/report";
 import type { Expense } from "@/types/database";
 import { buildReportHtml, reportFileName, type ReportMeta } from "./reportExport";
+
+type PdfModules = {
+  Print: typeof import("expo-print");
+  Sharing: typeof import("expo-sharing");
+  FileSystem: typeof import("expo-file-system");
+};
+
+/**
+ * Modul PDF dimuat saat dipakai saja (bukan saat halaman Laporan dibuka).
+ * APK lama (versi 1.0.0) belum punya modul native ini: tanpa cara ini halaman Laporan
+ * langsung crash. Sekarang hanya tombol PDF yang menampilkan pesan minta update APK.
+ */
+function loadPdfModules(): PdfModules {
+  try {
+    return {
+      Print: require("expo-print"),
+      Sharing: require("expo-sharing"),
+      FileSystem: require("expo-file-system"),
+    };
+  } catch {
+    throw new Error("Fitur PDF butuh aplikasi versi terbaru (1.1.0). Install APK terbaru dulu.");
+  }
+}
 
 /** Ukuran A4 dalam titik (72 per inci). */
 const A4 = { width: 595, height: 842 };
@@ -16,6 +36,8 @@ const A4 = { width: 595, height: 842 };
  * lalu buka menu bagikan Android (simpan ke Files, kirim WhatsApp, Drive, dll).
  */
 export async function shareReportPdf(report: Report, meta: ReportMeta, expenses: Expense[], menuSales: MenuSalesGroup[]): Promise<void> {
+  const { Print, Sharing, FileSystem } = loadPdfModules();
+  const { File, Paths } = FileSystem;
   const { uri } = await Print.printToFileAsync({ html: buildReportHtml(report, meta, expenses, menuSales), ...A4 });
 
   // printToFileAsync memberi nama acak -> pindahkan ke nama yang rapi

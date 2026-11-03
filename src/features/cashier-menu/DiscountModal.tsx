@@ -28,7 +28,7 @@ export function DiscountModal({
       onClose={onClose}
       footer={
         <View className="flex-row gap-3">
-          <Button title="Hapus Diskon" variant="outline" className="flex-1" onPress={() => onSave(0)} />
+          <Button title="Hapus Diskon" variant="action" className="flex-1" onPress={() => onSave(0)} />
           <Button title="Pakai" className="flex-1" onPress={() => onSave(percent)} />
         </View>
       }

@@ -1,4 +1,4 @@
-import { ActivityIndicator, Pressable, View } from "react-native";
+import { ActivityIndicator, View } from "react-native";
 import { Trash2 } from "lucide-react-native";
 import { AppModal } from "@/components/AppModal";
 import { AppText } from "@/components/AppText";
@@ -85,10 +85,7 @@ export function MemberDetailModal({
             </View>
           )}
 
-          <Pressable onPress={() => onDelete(member)} className="mt-6 h-11 flex-row items-center justify-center gap-2">
-            <Trash2 size={18} color={colors.action} />
-            <AppText className="text-action">Hapus member</AppText>
-          </Pressable>
+          <Button title="Hapus Member" variant="action" icon={Trash2} className="mt-6" onPress={() => onDelete(member)} />
         </>
       ) : null}
     </AppModal>

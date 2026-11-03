@@ -180,14 +180,15 @@ export function ExpenseFormModal({
           <AppText variant="muted" className="mt-5 text-center text-xs">
             Dicatat {formatDate(expense.created_at)}, {formatTime(expense.created_at)}
           </AppText>
-          <Pressable
+          <Button
+            title="Hapus Pengeluaran"
+            variant="action"
+            icon={Trash2}
+            className="mt-4"
+            loading={remove.isPending}
+            disabled={save.isPending}
             onPress={confirmDelete}
-            disabled={remove.isPending || save.isPending}
-            className="mt-3 h-11 flex-row items-center justify-center gap-2"
-          >
-            <Trash2 size={18} color={colors.action} />
-            <AppText className="text-action">{remove.isPending ? "Menghapus..." : "Hapus pengeluaran ini"}</AppText>
-          </Pressable>
+          />
         </>
       ) : null}
     </AppModal>

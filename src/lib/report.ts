@@ -152,3 +152,55 @@ export function buildReport(
     orderTypes: shares(typeMap, TYPE_ORDER),
   };
 }
+
+/** Satu baris "penjualan per menu" di laporan cetak (struk & PDF). */
+export type MenuSalesRow = { name: string; qty: number; revenue: number };
+export type MenuSalesGroup = { category: string; qty: number; revenue: number; rows: MenuSalesRow[] };
+
+/**
+ * Semua menu, terjual maupun tidak, dikelompokkan per kategori (untuk laporan cetak).
+ * - Menu aktif yang tidak terjual tetap tampil dengan 0 porsi.
+ * - Menu yang terjual tapi sudah dihapus/diganti nama masuk grup "Menu dihapus".
+ * - Urutan grup = urutan kategori, lalu "Tanpa kategori", lalu "Menu dihapus".
+ *   Di dalam grup: paling laku dulu, sisanya urut nama.
+ * - Penjualan = harga satuan x porsi (sama dengan "Menu Terlaris").
+ */
+export function buildMenuSales(
+  orders: OrderWithItems[],
+  menus: { id: string; name: string; category_id: string | null }[],
+  categories: { id: string; name: string }[],
+): MenuSalesGroup[] {
+  const sold = new Map<string, MenuSalesRow>(); // key: menu id, atau "name:<nama>" kalau menu tidak ditemukan
+  const menuById = new Map(menus.map((m) => [m.id, m]));
+  const menuIdByName = new Map(menus.map((m) => [m.name.trim().toLowerCase(), m.id]));
+
+  for (const o of orders) {
+    if (o.status !== "paid") continue;
+    for (const i of o.order_items) {
+      const id = i.menu_item_id && menuById.has(i.menu_item_id) ? i.menu_item_id : menuIdByName.get(i.name.trim().toLowerCase());
+      const key = id ?? `name:${i.name.trim()}`;
+      const cur = sold.get(key) ?? { name: id ? menuById.get(id)!.name : i.name.trim(), qty: 0, revenue: 0 };
+      sold.set(key, { ...cur, qty: cur.qty + i.qty, revenue: cur.revenue + i.unit_price * i.qty });
+    }
+  }
+
+  const NO_CATEGORY = "Tanpa kategori";
+  const DELETED = "Menu dihapus";
+  const categoryName = new Map(categories.map((c) => [c.id, c.name]));
+  const groups = new Map<string, MenuSalesRow[]>([...categories.map((c) => [c.name, []] as [string, MenuSalesRow[]]), [NO_CATEGORY, []], [DELETED, []]]);
+
+  for (const m of menus) {
+    const group = (m.category_id && categoryName.get(m.category_id)) || NO_CATEGORY;
+    groups.get(group)!.push(sold.get(m.id) ?? { name: m.name, qty: 0, revenue: 0 });
+  }
+  for (const [key, row] of sold) if (key.startsWith("name:")) groups.get(DELETED)!.push(row);
+
+  return [...groups.entries()]
+    .filter(([, rows]) => rows.length > 0)
+    .map(([category, rows]) => ({
+      category,
+      qty: rows.reduce((s, r) => s + r.qty, 0),
+      revenue: rows.reduce((s, r) => s + r.revenue, 0),
+      rows: [...rows].sort((a, b) => b.qty - a.qty || b.revenue - a.revenue || a.name.localeCompare(b.name, "id")),
+    }));
+}

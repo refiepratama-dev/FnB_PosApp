@@ -24,7 +24,7 @@ const ITEMS: Item[] = [
   { label: "Order", href: "/cashier/orders", icon: ReceiptText },
   { label: "Pengeluaran", href: "/cashier/expenses", icon: Wallet },
   { label: "Stok", href: "/cashier/stock", icon: Package },
-  { label: "Report", href: "/cashier/report", icon: ChartColumn },
+  { label: "Laporan", href: "/cashier/report", icon: ChartColumn },
   { label: "Member", href: "/cashier/members", icon: Users },
 ];
 

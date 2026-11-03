@@ -2,7 +2,7 @@
   "expo": {
     "name": "TemanPOS",
     "slug": "temanpos",
-    "version": "1.0.0",
+    "version": "1.1.0",
     "orientation": "default",
     "icon": "./assets/icon.png",
     "userInterfaceStyle": "light",
@@ -23,8 +23,6 @@
       "predictiveBackGestureEnabled": false,
       "package": "com.temanpos.app",
       "permissions": [
-        "android.permission.CAMERA",
-        "android.permission.BLUETOOTH_CONNECT",
         "android.permission.CAMERA",
         "android.permission.BLUETOOTH_CONNECT"
       ]
@@ -63,7 +61,8 @@
           "cameraPermission": "TemanPOS memakai kamera untuk scan QR toko.",
           "microphonePermission": false
         }
-      ]
+      ],
+      "expo-sharing"
     ],
     "extra": {
       "router": {

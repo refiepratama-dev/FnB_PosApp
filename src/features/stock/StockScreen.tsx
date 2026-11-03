@@ -23,7 +23,7 @@ function StockCard({ item, onPress }: { item: MenuItem; onPress: () => void }) {
   return (
     <Pressable
       onPress={onPress}
-      className={`flex-row items-center gap-3 rounded-3xl border p-3 active:bg-panel ${
+      className={`flex-row items-center gap-3 rounded-2xl border p-3 active:bg-panel ${
         soldOut ? "border-action/30 bg-action-soft" : "border-line bg-white"
       }`}
     >
@@ -69,7 +69,7 @@ function HistoryList() {
       refreshing={history.isRefetching}
       onRefresh={() => history.refetch()}
       renderItem={(m) => (
-        <View className="rounded-3xl border border-line bg-white px-4">
+        <View className="rounded-2xl border border-line bg-white px-4">
           <MovementRow movement={m} showName />
         </View>
       )}

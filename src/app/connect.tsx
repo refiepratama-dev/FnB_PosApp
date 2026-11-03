@@ -62,7 +62,7 @@ export default function ConnectScreen() {
           </AppText>
 
           {permission?.granted ? (
-            <View className="mb-4 aspect-square w-full max-w-xs overflow-hidden rounded-3xl border-2 border-brand">
+            <View className="mb-4 aspect-square w-full max-w-xs overflow-hidden rounded-2xl border-2 border-brand">
               <CameraView
                 style={{ flex: 1 }}
                 facing="back"
@@ -72,7 +72,7 @@ export default function ConnectScreen() {
             </View>
           ) : (
             <>
-              <View className="mb-5 aspect-square w-full max-w-[220px] items-center justify-center gap-3 rounded-3xl bg-brand-soft">
+              <View className="mb-5 aspect-square w-full max-w-[220px] items-center justify-center gap-3 rounded-2xl bg-brand-soft">
                 <QrCode size={64} color={colors.brand} />
                 <AppText className="text-center text-xs text-brand-strong">Kamera dipakai untuk scan QR</AppText>
               </View>

@@ -74,7 +74,7 @@ export default function DashboardScreen() {
         <AppText variant="heading" className="mb-3 text-lg">
           Akses Cepat
         </AppText>
-        <View className="flex-row rounded-3xl border border-line bg-white p-3">
+        <View className="flex-row rounded-2xl border border-line bg-white p-3">
           {SHORTCUTS.map(({ label, href, icon: Icon, tint, color }) => (
             <Pressable key={label} onPress={() => router.push(href)} className="flex-1 items-center gap-2 rounded-2xl py-2 active:bg-panel">
               <View className={`h-14 w-14 items-center justify-center rounded-full ${tint}`}>
@@ -97,12 +97,12 @@ export default function DashboardScreen() {
           </Pressable>
         </View>
         {recent.length === 0 && !query.isLoading ? (
-          <View className="items-center gap-2 rounded-3xl border border-line bg-white py-8">
+          <View className="items-center gap-2 rounded-2xl border border-line bg-white py-8">
             <ReceiptText size={26} color={colors.inkMuted} />
             <AppText variant="muted">Belum ada order hari ini</AppText>
           </View>
         ) : (
-          <View className="overflow-hidden rounded-3xl border border-line bg-white">
+          <View className="overflow-hidden rounded-2xl border border-line bg-white">
             {recent.map((o, i) => {
               const cancelled = o.status === "cancelled";
               return (

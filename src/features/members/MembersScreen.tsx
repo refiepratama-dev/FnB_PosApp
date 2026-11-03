@@ -22,7 +22,7 @@ function MemberCard({ member, onPress }: { member: Member; onPress: () => void }
   return (
     <Pressable
       onPress={onPress}
-      className="flex-row items-center gap-3 rounded-3xl border border-line bg-white p-3 active:bg-panel"
+      className="flex-row items-center gap-3 rounded-2xl border border-line bg-white p-3 active:bg-panel"
     >
       <Avatar name={member.name} size={48} />
       <View className="flex-1">

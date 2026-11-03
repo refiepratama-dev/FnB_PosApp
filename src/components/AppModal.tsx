@@ -41,7 +41,7 @@ export function AppModal({
       <KeyboardAvoidingView behavior={Platform.OS === "ios" ? "padding" : undefined} className="flex-1">
         <View style={pad} className="flex-1 items-center justify-center bg-black/40">
           <Pressable className="absolute inset-0" onPress={onClose} />
-          <View className={`max-h-full w-full overflow-hidden rounded-3xl bg-white ${size === "lg" ? "max-w-2xl" : "max-w-lg"}`}>
+          <View className={`max-h-full w-full overflow-hidden rounded-2xl bg-white ${size === "lg" ? "max-w-2xl" : "max-w-lg"}`}>
             <View className="h-16 flex-row items-center justify-between border-b border-line pl-5 pr-3">
               <AppText variant="heading" numberOfLines={1} className="flex-1 text-lg">
                 {title}

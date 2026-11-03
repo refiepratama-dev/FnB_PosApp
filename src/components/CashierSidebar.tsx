@@ -26,10 +26,11 @@ const ITEMS: Item[] = [
   { label: "Stok", href: "/cashier/stock", icon: Package },
   { label: "Report", href: "/cashier/report", icon: ChartColumn },
   { label: "Member", href: "/cashier/members", icon: Users },
-  { label: "Setting", href: "/cashier/settings", icon: Settings },
 ];
 
-/** Satu tombol sidebar: ikon di kiri, teks di sebelah kanan. */
+const SETTINGS_HREF: Href = "/cashier/settings";
+
+/** Satu tombol sidebar: ikon di kiri, teks di sebelah kanan. Tinggi 48 supaya mudah ditekan kasir. */
 function SidebarButton({
   label,
   icon: Icon,
@@ -47,7 +48,7 @@ function SidebarButton({
   return (
     <Pressable
       onPress={onPress}
-      className={`h-11 flex-row items-center gap-3 rounded-full px-4 ${
+      className={`h-12 flex-row items-center gap-3 rounded-full px-4 ${
         active ? "bg-accent-soft" : "active:bg-panel"
       }`}
     >
@@ -82,7 +83,7 @@ export function CashierSidebar() {
         </AppText>
       </View>
       {/* ScrollView supaya tetap muat di HP landscape yang layarnya pendek */}
-      <ScrollView contentContainerClassName="gap-1 px-3 pb-3">
+      <ScrollView contentContainerClassName="gap-2 px-3 pb-3">
         {ITEMS.map((item) => (
           <SidebarButton
             key={item.label}
@@ -94,7 +95,14 @@ export function CashierSidebar() {
         ))}
       </ScrollView>
 
-      <View className="gap-1 border-t border-line px-3 py-3">
+      {/* Setting, Mode Owner, Keluar dipisah di bawah supaya tidak tertukar dengan menu kerja harian */}
+      <View className="gap-2 border-t border-line px-3 py-3">
+        <SidebarButton
+          label="Setting"
+          icon={Settings}
+          active={pathname === SETTINGS_HREF}
+          onPress={() => router.replace(SETTINGS_HREF)}
+        />
         <SidebarButton label="Mode Owner" icon={ShieldCheck} onPress={() => router.push("/pin")} />
         <SidebarButton label="Keluar" icon={LogOut} danger onPress={exit} />
       </View>

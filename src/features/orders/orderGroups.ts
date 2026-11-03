@@ -51,7 +51,7 @@ export function groupOrdersByDate<T extends Order>(orders: T[], today: string): 
     });
 }
 
-function shiftDate(isoDate: string, days: number): string {
+export function shiftDate(isoDate: string, days: number): string {
   const [y, m, d] = isoDate.split("-").map(Number);
   const date = new Date(y, m - 1, d + days);
   return `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, "0")}-${String(date.getDate()).padStart(2, "0")}`;

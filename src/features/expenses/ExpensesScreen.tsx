@@ -1,48 +1,59 @@
 import { useMemo, useState } from "react";
-import { Image, Pressable, View } from "react-native";
+import { Pressable, SectionList, View } from "react-native";
 import { ChevronRight, Plus, Wallet } from "lucide-react-native";
 import { AppText } from "@/components/AppText";
+import { Chip } from "@/components/Chip";
 import { EmptyState } from "@/components/EmptyState";
-import { GridList } from "@/components/GridList";
 import { HeaderAction } from "@/components/HeaderAction";
 import { PeriodFilter } from "@/components/PeriodFilter";
 import { QueryState } from "@/components/QueryState";
 import { ScreenHeader } from "@/components/ScreenHeader";
+import { SearchInput } from "@/components/SearchInput";
 import { colors } from "@/constants/colors";
-import { formatDate, formatRupiah, formatTime } from "@/lib/format";
+import { formatRupiah, formatTime, toISODate } from "@/lib/format";
 import { periodRange, todayPeriod } from "@/lib/period";
 import type { Expense } from "@/types/database";
 import { ExpenseFormModal } from "./ExpenseFormModal";
+import { groupExpensesByDate } from "./expenseGroups";
 import { useExpenses, useExpensesRealtime } from "./useExpenses";
+
+type MethodFilter = "all" | Expense["method"];
 
 const METHOD_LABEL: Record<Expense["method"], string> = { cash: "Tunai", transfer: "Transfer" };
 
-function ExpenseCard({ expense, onPress }: { expense: Expense; onPress: () => void }) {
+/** Kartu ringkasan merah teks putih (pengeluaran = uang keluar). */
+function SummaryCard({ label, value }: { label: string; value: string }) {
   return (
-    <Pressable
-      onPress={onPress}
-      className="flex-row items-center gap-3 rounded-2xl border border-line bg-white p-3 active:bg-panel"
-    >
-      {expense.receipt_image_url ? (
-        <Image
-          source={{ uri: expense.receipt_image_url }}
-          style={{ width: 52, height: 52, borderRadius: 14, backgroundColor: colors.panel }}
-          resizeMode="cover"
-        />
-      ) : (
-        <View className="h-[52px] w-[52px] items-center justify-center rounded-[14px] bg-action-soft">
-          <Wallet size={22} color={colors.action} />
-        </View>
-      )}
+    <View className="flex-1 rounded-2xl bg-action px-4 py-3">
+      <AppText variant="muted" className="text-xs text-white opacity-80">
+        {label}
+      </AppText>
+      <AppText variant="heading" numberOfLines={1} adjustsFontSizeToFit className="text-lg text-white">
+        {value}
+      </AppText>
+    </View>
+  );
+}
+
+/** Satu baris pengeluaran, polanya sama dengan baris di daftar Order. */
+function ExpenseRow({ expense, onPress }: { expense: Expense; onPress: () => void }) {
+  return (
+    <Pressable onPress={onPress} className="flex-row items-center gap-3 border-b border-line bg-white px-5 py-3 active:bg-panel">
+      <View className="w-12 items-center">
+        <AppText variant="heading" className="text-sm">
+          {formatTime(expense.created_at)}
+        </AppText>
+      </View>
       <View className="flex-1">
-        <AppText variant="heading" numberOfLines={2} className="text-base">
+        <AppText variant="heading" numberOfLines={1} className="text-sm">
           {expense.description}
         </AppText>
         <AppText variant="muted" numberOfLines={1} className="text-xs">
-          {formatDate(expense.expense_date + "T00:00:00")} · {formatTime(expense.created_at)} · {METHOD_LABEL[expense.method]}
+          {METHOD_LABEL[expense.method]}
+          {expense.receipt_image_url ? " • Ada foto nota" : ""}
         </AppText>
       </View>
-      <AppText variant="heading" className="text-base text-action">
+      <AppText variant="heading" className="text-sm text-action">
         {formatRupiah(expense.amount)}
       </AppText>
       <ChevronRight size={16} color={colors.inkMuted} />
@@ -51,14 +62,16 @@ function ExpenseCard({ expense, onPress }: { expense: Expense; onPress: () => vo
 }
 
 /**
- * Pengeluaran (dipakai Kasir landscape & Owner portrait): daftar per periode,
- * tambah / ubah / hapus, foto nota. Data asli dari tabel `expenses` di Supabase;
- * total pengeluaran ikut masuk ke Laporan & Dashboard (laba sederhana).
+ * Pengeluaran (dipakai Kasir landscape & Owner portrait): daftar per periode dikelompokkan
+ * per tanggal (seperti halaman Order), cari, filter Tunai/Transfer, tambah / ubah / hapus, foto nota.
+ * Data asli dari tabel `expenses` di Supabase; total pengeluaran ikut masuk ke Laporan & Dashboard.
  * Penanggung jawab: Fahri (lihat docs/CODING-GUIDE.md)
  */
 export default function ExpensesScreen() {
   useExpensesRealtime();
   const [period, setPeriod] = useState(todayPeriod());
+  const [method, setMethod] = useState<MethodFilter>("all");
+  const [search, setSearch] = useState("");
   const range = periodRange(period);
   const query = useExpenses(range);
 
@@ -66,17 +79,14 @@ export default function ExpensesScreen() {
   const [editing, setEditing] = useState<Expense | null>(null); // null = pengeluaran baru
 
   const expenses = useMemo(() => query.data ?? [], [query.data]);
-  const summary = useMemo(() => {
-    let total = 0;
-    let cash = 0;
-    let transfer = 0;
-    for (const e of expenses) {
-      total += e.amount;
-      if (e.method === "cash") cash += e.amount;
-      else transfer += e.amount;
-    }
-    return { total, cash, transfer };
-  }, [expenses]);
+  const total = expenses.reduce((sum, e) => sum + e.amount, 0);
+
+  const filtered = useMemo(() => {
+    const s = search.trim().toLowerCase();
+    return expenses.filter((e) => (method === "all" || e.method === method) && (!s || e.description.toLowerCase().includes(s)));
+  }, [expenses, method, search]);
+
+  const sections = useMemo(() => groupExpensesByDate(filtered, toISODate(new Date())), [filtered]);
 
   function openNew() {
     setEditing(null);
@@ -88,46 +98,50 @@ export default function ExpensesScreen() {
     setFormOpen(true);
   }
 
-  const header = (
-    <View className="mb-1.5 gap-3 px-1.5 pb-1.5">
-      <PeriodFilter value={period} onChange={setPeriod} />
-      {query.data ? (
-        <View className="rounded-2xl border border-line bg-white p-4">
-          <AppText variant="muted" className="text-xs">
-            Total Pengeluaran
-          </AppText>
-          <AppText variant="heading" numberOfLines={1} adjustsFontSizeToFit className="mt-1 text-2xl text-action">
-            {formatRupiah(summary.total)}
-          </AppText>
-          <AppText variant="muted" numberOfLines={1} className="mt-0.5 text-xs">
-            {expenses.length} catatan · Tunai {formatRupiah(summary.cash)} · Transfer {formatRupiah(summary.transfer)}
-          </AppText>
-        </View>
-      ) : null}
-    </View>
-  );
-
   return (
     <View className="flex-1 bg-white">
       <ScreenHeader title="Pengeluaran" right={<HeaderAction label="Tambah" icon={Plus} onPress={openNew} />} />
 
-      <GridList
-        data={expenses}
-        keyExtractor={(e) => e.id}
-        refreshing={query.isRefetching}
-        onRefresh={() => query.refetch()}
-        header={header}
-        renderItem={(e) => <ExpenseCard expense={e} onPress={() => openEdit(e)} />}
-        empty={
-          query.isLoading || query.error ? (
-            <QueryState query={query} />
-          ) : (
-            <EmptyState icon={Wallet} title="Belum ada pengeluaran" description="Tidak ada catatan pengeluaran di periode ini.">
-              <HeaderAction label="Tambah Pengeluaran" icon={Plus} onPress={openNew} />
-            </EmptyState>
-          )
-        }
-      />
+      <View className="gap-3 border-b border-line px-5 py-4">
+        <PeriodFilter value={period} onChange={setPeriod} />
+        <View className="flex-row gap-3">
+          <SummaryCard label="Catatan" value={String(expenses.length)} />
+          <SummaryCard label="Total Pengeluaran" value={formatRupiah(total)} />
+        </View>
+        <SearchInput value={search} onChangeText={setSearch} placeholder="Cari keterangan pengeluaran" />
+        <View className="flex-row gap-2">
+          <Chip label="Semua" active={method === "all"} onPress={() => setMethod("all")} />
+          <Chip label="Tunai" active={method === "cash"} onPress={() => setMethod("cash")} />
+          <Chip label="Transfer" active={method === "transfer"} onPress={() => setMethod("transfer")} />
+        </View>
+      </View>
+
+      {query.isLoading || query.error ? (
+        <QueryState query={query} />
+      ) : filtered.length === 0 ? (
+        <EmptyState icon={Wallet} title="Belum ada pengeluaran" description="Tidak ada catatan pengeluaran di periode ini.">
+          <HeaderAction label="Tambah Pengeluaran" icon={Plus} onPress={openNew} />
+        </EmptyState>
+      ) : (
+        <SectionList
+          sections={sections}
+          keyExtractor={(e) => e.id}
+          stickySectionHeadersEnabled
+          refreshing={query.isRefetching}
+          onRefresh={() => void query.refetch()}
+          renderSectionHeader={({ section }) => (
+            <View className="flex-row items-center justify-between gap-3 border-b border-line bg-panel px-5 py-2">
+              <AppText variant="heading" numberOfLines={1} className="flex-1 text-sm">
+                {section.title}
+              </AppText>
+              <AppText variant="muted" className="text-xs">
+                {section.data.length} catatan · {formatRupiah(section.total)}
+              </AppText>
+            </View>
+          )}
+          renderItem={({ item }) => <ExpenseRow expense={item} onPress={() => openEdit(item)} />}
+        />
+      )}
 
       <ExpenseFormModal visible={formOpen} expense={editing} onClose={() => setFormOpen(false)} />
     </View>

@@ -20,7 +20,7 @@ const SHORTCUTS: { label: string; href: Href; icon: LucideIcon; tint: string; co
 ];
 
 /**
- * Dashboard Owner: ringkasan hari ini, akses cepat, order terbaru (realtime + cekring).
+ * Dashboard Owner: ringkasan hari ini, akses cepat, 4 order terbaru (realtime + cekring), 4 pengeluaran terbaru.
  * Desain awal: Fahri. Realtime & cekring dipasang di layout Owner (useOwnerOrderAlerts).
  */
 export default function DashboardScreen() {
@@ -33,7 +33,9 @@ export default function DashboardScreen() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
     [query.data, range.from],
   );
-  const recent = (query.data?.orders ?? []).slice(0, 8);
+  const recent = (query.data?.orders ?? []).slice(0, 4);
+  // pengeluaran terbaru dulu (urut waktu dicatat), maksimal 4
+  const recentExpenses = [...(query.data?.expenses ?? [])].sort((a, b) => (a.created_at < b.created_at ? 1 : -1)).slice(0, 4);
   const cash = report?.payments.find((p) => p.key === "cash");
   const qris = report?.payments.find((p) => p.key === "qris");
 
@@ -145,6 +147,50 @@ export default function DashboardScreen() {
                 </Pressable>
               );
             })}
+          </View>
+        )}
+      </View>
+
+      {/* 4. Pengeluaran terbaru (hari ini) */}
+      <View>
+        <View className="mb-3 flex-row items-center justify-between">
+          <AppText variant="heading" className="text-lg">
+            Pengeluaran Terbaru
+          </AppText>
+          <Pressable onPress={() => router.push("/owner/expenses")} hitSlop={8}>
+            <AppText className="text-sm text-brand">Lihat semua</AppText>
+          </Pressable>
+        </View>
+        {recentExpenses.length === 0 && !query.isLoading ? (
+          <View className="items-center gap-2 rounded-2xl border border-line bg-white py-8">
+            <Wallet size={26} color={colors.inkMuted} />
+            <AppText variant="muted">Belum ada pengeluaran hari ini</AppText>
+          </View>
+        ) : (
+          <View className="overflow-hidden rounded-2xl border border-line bg-white">
+            {recentExpenses.map((e, i) => (
+              <Pressable
+                key={e.id}
+                onPress={() => router.push("/owner/expenses")}
+                className={`flex-row items-center gap-3 px-4 py-3 active:bg-panel ${i > 0 ? "border-t border-line" : ""}`}
+              >
+                <AppText variant="heading" className="w-12 text-sm">
+                  {formatTime(e.created_at)}
+                </AppText>
+                <View className="flex-1">
+                  <AppText variant="heading" numberOfLines={1} className="text-sm">
+                    {e.description}
+                  </AppText>
+                  <AppText variant="muted" numberOfLines={1} className="text-xs">
+                    {e.method === "cash" ? "Tunai" : "Transfer"}
+                  </AppText>
+                </View>
+                <AppText variant="heading" className="text-sm text-action">
+                  {formatRupiah(e.amount)}
+                </AppText>
+                <ChevronRight size={16} color={colors.inkMuted} />
+              </Pressable>
+            ))}
           </View>
         )}
       </View>

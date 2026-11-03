@@ -82,10 +82,8 @@ function CartRow({ line, unitPrice }: { line: CartLine; unitPrice: number }) {
           {formatRupiah(unitPrice * line.qty)}
         </AppText>
       </View>
-      <View className="mt-2 flex-row items-center justify-between">
-        <AppText variant="muted" className="text-xs">
-          @ {formatRupiah(unitPrice)}
-        </AppText>
+      {/* harga satuan tidak ditampilkan: jumlah (− 2 +) dan total di kanan sudah cukup */}
+      <View className="mt-2 flex-row items-center justify-end">
         <View className="flex-row items-center rounded-full bg-panel">
           <Pressable onPress={() => changeQty(line.key, -1)} className="h-8 w-9 items-center justify-center">
             {line.qty === 1 ? <Trash2 size={15} color={colors.action} /> : <Minus size={16} color={colors.ink} />}

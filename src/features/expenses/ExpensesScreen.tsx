@@ -1,6 +1,6 @@
 import { useMemo, useState } from "react";
-import { Pressable, SectionList, View } from "react-native";
-import { ChevronRight, Plus, Wallet } from "lucide-react-native";
+import { Pressable, SectionList, View, useWindowDimensions } from "react-native";
+import { ChevronLeft, ChevronRight, Plus, Wallet } from "lucide-react-native";
 import { AppText } from "@/components/AppText";
 import { Chip } from "@/components/Chip";
 import { EmptyState } from "@/components/EmptyState";
@@ -13,6 +13,7 @@ import { colors } from "@/constants/colors";
 import { formatRupiah, formatTime, toISODate } from "@/lib/format";
 import { periodRange, todayPeriod } from "@/lib/period";
 import type { Expense } from "@/types/database";
+import { ExpenseDetail } from "./ExpenseDetail";
 import { ExpenseFormModal } from "./ExpenseFormModal";
 import { groupExpensesByDate } from "./expenseGroups";
 import { useExpenses, useExpensesRealtime } from "./useExpenses";
@@ -24,7 +25,7 @@ const METHOD_LABEL: Record<Expense["method"], string> = { cash: "Tunai", transfe
 /** Kartu ringkasan merah teks putih (pengeluaran = uang keluar). */
 function SummaryCard({ label, value }: { label: string; value: string }) {
   return (
-    <View className="flex-1 rounded-2xl bg-action px-4 py-3">
+    <View className="rounded-2xl bg-action px-4 py-3">
       <AppText variant="muted" className="text-xs text-white opacity-80">
         {label}
       </AppText>
@@ -36,9 +37,12 @@ function SummaryCard({ label, value }: { label: string; value: string }) {
 }
 
 /** Satu baris pengeluaran, polanya sama dengan baris di daftar Order. */
-function ExpenseRow({ expense, onPress }: { expense: Expense; onPress: () => void }) {
+function ExpenseRow({ expense, selected, onPress }: { expense: Expense; selected: boolean; onPress: () => void }) {
   return (
-    <Pressable onPress={onPress} className="flex-row items-center gap-3 border-b border-line bg-white px-5 py-3 active:bg-panel">
+    <Pressable
+      onPress={onPress}
+      className={`flex-row items-center gap-3 border-b border-line px-5 py-3 ${selected ? "bg-brand-soft" : "bg-white active:bg-panel"}`}
+    >
       <View className="w-12 items-center">
         <AppText variant="heading" className="text-sm">
           {formatTime(expense.created_at)}
@@ -62,13 +66,16 @@ function ExpenseRow({ expense, onPress }: { expense: Expense; onPress: () => voi
 }
 
 /**
- * Pengeluaran (dipakai Kasir landscape & Owner portrait): daftar per periode dikelompokkan
- * per tanggal (seperti halaman Order), cari, filter Tunai/Transfer, tambah / ubah / hapus, foto nota.
+ * Pengeluaran (dipakai Kasir landscape & Owner portrait), polanya sama dengan halaman Order:
+ * tablet landscape = daftar + detail berdampingan, HP = tap baris -> halaman detail.
+ * Daftar per tanggal, cari, filter Tunai/Transfer, tambah / ubah / hapus, foto nota.
  * Data asli dari tabel `expenses` di Supabase; total pengeluaran ikut masuk ke Laporan & Dashboard.
  * Penanggung jawab: Fahri (lihat docs/CODING-GUIDE.md)
  */
 export default function ExpensesScreen() {
   useExpensesRealtime();
+  const { width } = useWindowDimensions();
+  const [selectedId, setSelectedId] = useState<string | null>(null);
   const [period, setPeriod] = useState(todayPeriod());
   const [method, setMethod] = useState<MethodFilter>("all");
   const [search, setSearch] = useState("");
@@ -87,6 +94,10 @@ export default function ExpensesScreen() {
   }, [expenses, method, search]);
 
   const sections = useMemo(() => groupExpensesByDate(filtered, toISODate(new Date())), [filtered]);
+  const selected = expenses.find((e) => e.id === selectedId) ?? null;
+
+  // Lebar layar cukup -> daftar & detail berdampingan (tablet landscape), sama dengan halaman Order
+  const split = width >= 900;
 
   function openNew() {
     setEditing(null);
@@ -98,16 +109,40 @@ export default function ExpensesScreen() {
     setFormOpen(true);
   }
 
-  return (
-    <View className="flex-1 bg-white">
-      <ScreenHeader title="Pengeluaran" right={<HeaderAction label="Tambah" icon={Plus} onPress={openNew} />} />
+  const formModal = <ExpenseFormModal visible={formOpen} expense={editing} onClose={() => setFormOpen(false)} />;
+  const detail = selected ? (
+    <ExpenseDetail expense={selected} onEdit={() => openEdit(selected)} onDeleted={() => setSelectedId(null)} />
+  ) : null;
 
-      <View className="gap-3 border-b border-line px-5 py-4">
-        <PeriodFilter value={period} onChange={setPeriod} />
-        <View className="flex-row gap-3">
-          <SummaryCard label="Catatan" value={String(expenses.length)} />
-          <SummaryCard label="Total Pengeluaran" value={formatRupiah(total)} />
+  // HP / portrait: detail tampil sebagai halaman sendiri
+  if (!split && selected) {
+    return (
+      <View className="flex-1 bg-white">
+        <View className="h-16 flex-row items-center gap-2 border-b border-line px-3">
+          <Pressable onPress={() => setSelectedId(null)} className="h-10 w-10 items-center justify-center rounded-full active:bg-panel">
+            <ChevronLeft size={22} color={colors.ink} />
+          </Pressable>
+          <AppText variant="heading" className="text-lg">
+            Detail Pengeluaran
+          </AppText>
         </View>
+        {detail}
+        {formModal}
+      </View>
+    );
+  }
+
+  const list = (
+    <View className="flex-1 bg-white">
+      <View className="gap-3 border-b border-line px-5 py-4">
+        <PeriodFilter
+          value={period}
+          onChange={(p) => {
+            setPeriod(p);
+            setSelectedId(null);
+          }}
+        />
+        <SummaryCard label="Total Pengeluaran" value={formatRupiah(total)} />
         <SearchInput value={search} onChangeText={setSearch} placeholder="Cari keterangan pengeluaran" />
         <View className="flex-row gap-2">
           <Chip label="Semua" active={method === "all"} onPress={() => setMethod("all")} />
@@ -139,11 +174,28 @@ export default function ExpensesScreen() {
               </AppText>
             </View>
           )}
-          renderItem={({ item }) => <ExpenseRow expense={item} onPress={() => openEdit(item)} />}
+          renderItem={({ item }) => (
+            <ExpenseRow expense={item} selected={split && item.id === selectedId} onPress={() => setSelectedId(item.id)} />
+          )}
         />
       )}
+    </View>
+  );
 
-      <ExpenseFormModal visible={formOpen} expense={editing} onClose={() => setFormOpen(false)} />
+  return (
+    <View className="flex-1 bg-white">
+      <ScreenHeader title="Pengeluaran" right={<HeaderAction label="Tambah" icon={Plus} onPress={openNew} />} />
+      {split ? (
+        <View className="flex-1 flex-row">
+          <View className="flex-1 border-r border-line">{list}</View>
+          <View style={{ width: Math.min(460, width * 0.42) }} className="bg-white">
+            {detail ?? <EmptyState icon={Wallet} title="Pilih pengeluaran" description="Tap pengeluaran di daftar untuk melihat detailnya" />}
+          </View>
+        </View>
+      ) : (
+        list
+      )}
+      {formModal}
     </View>
   );
 }

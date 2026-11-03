@@ -24,6 +24,8 @@
       "package": "com.temanpos.app",
       "permissions": [
         "android.permission.CAMERA",
+        "android.permission.BLUETOOTH_CONNECT",
+        "android.permission.CAMERA",
         "android.permission.BLUETOOTH_CONNECT"
       ]
     },
@@ -73,6 +75,12 @@
         "projectId": "2723a5bc-f303-414f-b5d3-a06069d5c7ae"
       }
     },
-    "owner": "refie"
+    "owner": "refie",
+    "runtimeVersion": {
+      "policy": "appVersion"
+    },
+    "updates": {
+      "url": "https://u.expo.dev/2723a5bc-f303-414f-b5d3-a06069d5c7ae"
+    }
   }
 }

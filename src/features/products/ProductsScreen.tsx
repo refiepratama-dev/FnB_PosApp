@@ -46,6 +46,11 @@ function ProductCard({
         <AppText variant="heading" numberOfLines={1} className="text-base">
           {item.name}
         </AppText>
+        {item.description ? (
+          <AppText variant="muted" numberOfLines={1} className="text-xs">
+            {item.description}
+          </AppText>
+        ) : null}
         <AppText variant="heading" className="text-brand">
           {formatRupiah(item.price)}
         </AppText>

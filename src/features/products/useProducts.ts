@@ -14,6 +14,7 @@ import type { OptionGroupRow, OptionRow } from "./optionDraft";
 
 export type MenuValues = {
   name: string;
+  description: string | null;
   price: number;
   cost_price: number | null;
   category_id: string | null;

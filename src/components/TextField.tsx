@@ -26,7 +26,8 @@ export function TextField({
           secureTextEntry={isPassword && hidden}
           autoCapitalize={isPassword ? "none" : props.autoCapitalize}
           autoCorrect={isPassword ? false : props.autoCorrect}
-          className={`h-14 rounded-2xl border border-line bg-panel font-sans text-base text-ink focus:border-brand ${
+          textAlignVertical={props.multiline ? "top" : undefined}
+          className={`${props.multiline ? "min-h-24 py-3" : "h-14"} rounded-2xl border border-line bg-panel font-sans text-base text-ink focus:border-brand ${
             isPassword ? "pl-4 pr-14" : "px-4"
           }`}
           {...props}

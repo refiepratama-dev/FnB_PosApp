@@ -5,7 +5,7 @@ Tandai prioritas tiap modul: **MVP** / **Fase 2** / **Tidak perlu**.
 ## 1. Menu & Produk (prioritas: MVP) ✅
 Dikelola oleh Owner. Kasir hanya bisa menandai tersedia/habis.
 - Struktur: **Kategori → Item** (tanpa sub-kategori)
-- Data item: nama, harga, kategori, **foto menu (opsional)**, status tersedia/habis. Tanpa foto → kotak warna + inisial nama menu.
+- Data item: nama, harga, kategori, **keterangan (opsional, maks 150 huruf, misal "Isi 2 potong, pedas sedang")**, **foto menu (opsional)**, status tersedia/habis. Keterangan tampil di kartu menu kasir (maks 2 baris), popup varian/topping, dan daftar Kelola Produk. Tanpa foto → kotak warna + inisial nama menu.
 - Foto diupload **dari galeri saja** (tanpa kamera). App otomatis memotong **persegi 1:1**, mengecilkan ke **800×800 px**, dan mengompres ke JPEG (hasil sekitar 100–300 KB). Foto asli maksimal **10 MB**; lebih dari itu ditolak dengan pesan.
 - **Harga modal (HPP)** opsional per item → untuk laba kotor di laporan
 - **Varian** dengan harga berbeda (Regular/Large, Panas/Dingin)

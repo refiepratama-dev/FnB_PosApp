@@ -21,7 +21,7 @@ export function KpiCard({
   const filled = tone === "highlight";
   const color = { default: "", brand: "text-brand", good: "text-success", bad: "text-action", highlight: "text-white" }[tone];
   return (
-    <View style={style} className={`rounded-3xl border p-4 ${filled ? "border-brand bg-brand" : "border-line bg-white"}`}>
+    <View style={style} className={`rounded-2xl border p-4 ${filled ? "border-brand bg-brand" : "border-line bg-white"}`}>
       <AppText variant="muted" className={`text-xs ${filled ? "text-white opacity-80" : ""}`}>
         {label}
       </AppText>

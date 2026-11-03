@@ -78,7 +78,7 @@ export function OrderDoneModal({
         style={{ paddingTop: Math.max(16, insets.top), paddingBottom: Math.max(16, insets.bottom), paddingHorizontal: Math.max(16, insets.left, insets.right) }}
         className="flex-1 items-center justify-center bg-black/40"
       >
-        <View className="w-full max-w-sm items-center rounded-3xl bg-white p-6">
+        <View className="w-full max-w-sm items-center rounded-2xl bg-white p-6">
           <View className="mb-4 h-20 w-20 items-center justify-center rounded-full bg-success">
             <Check size={44} color={colors.white} strokeWidth={3} />
           </View>

@@ -29,7 +29,7 @@ export function StoreQrModal({ visible, onClose }: { visible: boolean; onClose: 
           <AppText variant="muted" className="mb-4 mt-1 text-center text-sm">
             Di device baru, buka layar &quot;Hubungkan ke Toko&quot; lalu scan QR ini.
           </AppText>
-          <View className="rounded-3xl border border-line bg-white p-3">
+          <View className="rounded-2xl border border-line bg-white p-3">
             <QrCode value={code} size={size} />
           </View>
           <AppText className="mb-4 mt-4 text-center text-xs text-action">

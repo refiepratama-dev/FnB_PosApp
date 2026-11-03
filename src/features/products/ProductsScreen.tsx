@@ -39,7 +39,7 @@ function ProductCard({
   return (
     <Pressable
       onPress={onPress}
-      className="flex-row items-center gap-3 rounded-3xl border border-line bg-white p-3 active:bg-panel"
+      className="flex-row items-center gap-3 rounded-2xl border border-line bg-white p-3 active:bg-panel"
     >
       <MenuThumb name={item.name} imageUrl={item.image_url} size={72} />
       <View className="flex-1">

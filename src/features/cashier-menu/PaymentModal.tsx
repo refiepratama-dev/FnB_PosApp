@@ -25,7 +25,7 @@ function OptionTile({ label, icon: Icon, active, onPress }: { label: string; ico
   return (
     <Pressable
       onPress={onPress}
-      className={`h-24 min-w-[45%] flex-1 items-center justify-center gap-2 rounded-3xl border-2 ${
+      className={`h-24 min-w-[45%] flex-1 items-center justify-center gap-2 rounded-2xl border-2 ${
         active ? "border-brand bg-brand-soft" : "border-line bg-white active:bg-panel"
       }`}
     >
@@ -68,7 +68,7 @@ export function PaymentModal({
         />
       }
     >
-      <View className="mb-5 items-center rounded-3xl bg-panel py-5">
+      <View className="mb-5 items-center rounded-2xl bg-panel py-5">
         <AppText variant="muted" className="text-sm">
           Total
         </AppText>

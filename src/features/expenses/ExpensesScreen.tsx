@@ -21,7 +21,7 @@ function ExpenseCard({ expense, onPress }: { expense: Expense; onPress: () => vo
   return (
     <Pressable
       onPress={onPress}
-      className="flex-row items-center gap-3 rounded-3xl border border-line bg-white p-3 active:bg-panel"
+      className="flex-row items-center gap-3 rounded-2xl border border-line bg-white p-3 active:bg-panel"
     >
       {expense.receipt_image_url ? (
         <Image
@@ -92,7 +92,7 @@ export default function ExpensesScreen() {
     <View className="mb-1.5 gap-3 px-1.5 pb-1.5">
       <PeriodFilter value={period} onChange={setPeriod} />
       {query.data ? (
-        <View className="rounded-3xl border border-line bg-white p-4">
+        <View className="rounded-2xl border border-line bg-white p-4">
           <AppText variant="muted" className="text-xs">
             Total Pengeluaran
           </AppText>

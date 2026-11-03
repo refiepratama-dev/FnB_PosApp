@@ -44,7 +44,7 @@ export function MenuCard({
       onPress={onPress}
       onLongPress={onLongPress}
       disabled={soldOut}
-      className={`flex-1 overflow-hidden rounded-3xl border bg-white active:opacity-80 ${
+      className={`flex-1 overflow-hidden rounded-2xl border bg-white active:opacity-80 ${
         qtyInCart > 0 ? "border-brand" : "border-line"
       } ${soldOut ? "opacity-50" : ""}`}
       style={{ shadowColor: "#000", shadowOpacity: 0.04, shadowRadius: 8, shadowOffset: { width: 0, height: 2 }, elevation: 1 }}

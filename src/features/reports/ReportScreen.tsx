@@ -30,7 +30,7 @@ function shortRupiah(value: number) {
 
 function Section({ title, children, style }: { title: string; children: React.ReactNode; style?: object }) {
   return (
-    <View style={style} className="rounded-3xl border border-line bg-white p-4">
+    <View style={style} className="rounded-2xl border border-line bg-white p-4">
       <AppText variant="heading" className="mb-3 text-base">
         {title}
       </AppText>

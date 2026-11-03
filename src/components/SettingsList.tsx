@@ -87,7 +87,7 @@ export function SettingsList({ items = [] }: { items?: SettingItem[] }) {
   return (
     <ScrollView className="flex-1 bg-panel" contentContainerClassName="w-full max-w-2xl gap-4 p-4">
       {/* Daftar pengaturan dalam satu kartu */}
-      <View className="overflow-hidden rounded-3xl border border-line bg-white">
+      <View className="overflow-hidden rounded-2xl border border-line bg-white">
         {items.map((item, i) => (
           <Row
             key={item.label}
@@ -101,7 +101,7 @@ export function SettingsList({ items = [] }: { items?: SettingItem[] }) {
       </View>
 
       {/* Logout di kartu terpisah supaya tidak tertekan tanpa sengaja */}
-      <View className="overflow-hidden rounded-3xl border border-line bg-white">
+      <View className="overflow-hidden rounded-2xl border border-line bg-white">
         <Row label="Logout akun" icon={LogOut} onPress={confirmLogout} danger first />
       </View>
 

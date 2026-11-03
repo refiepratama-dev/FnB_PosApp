@@ -84,9 +84,14 @@ export default function DashboardScreen() {
         <AppText variant="heading" className="mb-3 text-lg">
           Akses Cepat
         </AppText>
-        <View className="flex-row rounded-2xl border border-line bg-white p-3">
+        {/* Satu kartu per tombol */}
+        <View className="flex-row gap-3">
           {SHORTCUTS.map(({ label, href, icon: Icon, tint, color }) => (
-            <Pressable key={label} onPress={() => router.push(href)} className="flex-1 items-center gap-2 rounded-2xl py-2 active:bg-panel">
+            <Pressable
+              key={label}
+              onPress={() => router.push(href)}
+              className="flex-1 items-center gap-2 rounded-2xl border border-line bg-white py-4 active:bg-panel"
+            >
               <View className={`h-14 w-14 items-center justify-center rounded-full ${tint}`}>
                 <Icon size={26} color={color} />
               </View>

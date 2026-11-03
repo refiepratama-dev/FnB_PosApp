@@ -3,7 +3,7 @@ import { AppText } from "@/components/AppText";
 
 /**
  * Kartu angka (KPI). tone mengubah warna angka: positif hijau, negatif merah.
- * tone "highlight": kartu penuh warna brand dengan teks putih (dipakai Omzet di Laporan).
+ * tone "highlight": kartu penuh warna brand dengan teks putih (dipakai kartu Omzet di Laporan & Dashboard).
  */
 export function KpiCard({
   label,

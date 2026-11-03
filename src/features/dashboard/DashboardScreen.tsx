@@ -56,7 +56,7 @@ export default function DashboardScreen() {
         ) : (
           <View className="gap-3">
             <View className="flex-row gap-3">
-              <KpiCard style={{ flex: 1 }} label="Omzet" value={formatRupiah(report.omzet)} tone="brand" />
+              <KpiCard style={{ flex: 1 }} label="Omzet" value={formatRupiah(report.omzet)} tone="highlight" />
               <KpiCard style={{ flex: 1 }} label="Jumlah Order" value={String(report.transactions)} />
             </View>
             <KpiCard

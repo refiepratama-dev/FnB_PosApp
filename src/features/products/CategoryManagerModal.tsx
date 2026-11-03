@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { Alert, Pressable, TextInput, View } from "react-native";
-import { Archive, Check, ChevronDown, ChevronUp, Pencil, Plus, X } from "lucide-react-native";
+import { Check, ChevronDown, ChevronUp, Pencil, Plus, Trash2, X } from "lucide-react-native";
 import { AppModal } from "@/components/AppModal";
 import { AppText } from "@/components/AppText";
 import { colors } from "@/constants/colors";
@@ -33,7 +33,7 @@ function IconButton({
   );
 }
 
-/** Kelola kategori: tambah, ganti nama, atur urutan, arsipkan. */
+/** Kelola kategori: tambah, ganti nama, atur urutan, hapus (di database diarsipkan). */
 export function CategoryManagerModal({
   visible,
   categories,
@@ -102,14 +102,14 @@ export function CategoryManagerModal({
   function confirmArchive(category: Category) {
     const count = countOf(category.id);
     const note = count > 0 ? ` ${count} menu di dalamnya akan menjadi "Tanpa kategori".` : "";
-    Alert.alert("Arsipkan kategori?", `Kategori "${category.name}" tidak akan tampil lagi.${note}`, [
+    Alert.alert("Hapus kategori?", `Kategori "${category.name}" akan dihapus.${note}`, [
       { text: "Batal", style: "cancel" },
       {
-        text: "Arsipkan",
+        text: "Hapus",
         style: "destructive",
         onPress: () =>
           archive.mutate(category.id, {
-            onError: (e) => Alert.alert("Gagal mengarsipkan", errorMessage(e)),
+            onError: (e) => Alert.alert("Gagal menghapus", errorMessage(e)),
           }),
       },
     ]);
@@ -182,7 +182,7 @@ export function CategoryManagerModal({
                     onPress={() => move(index, 1)}
                   />
                   <IconButton icon={Pencil} onPress={() => startEdit(category)} />
-                  <IconButton icon={Archive} color={colors.action} onPress={() => confirmArchive(category)} />
+                  <IconButton icon={Trash2} color={colors.action} onPress={() => confirmArchive(category)} />
                 </>
               )}
             </View>

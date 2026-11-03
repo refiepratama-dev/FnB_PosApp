@@ -17,7 +17,7 @@ import { useArchiveMenuItem, useSaveMenuItem } from "./useProducts";
 /**
  * Form tambah / ubah menu: nama, harga, HPP, kategori, foto.
  * item = null  -> menu baru
- * item = menu  -> ubah menu itu (ada tombol Arsipkan)
+ * item = menu  -> ubah menu itu (ada tombol Hapus; di database cuma diarsipkan supaya riwayat order aman)
  */
 export function ProductFormModal({
   visible,
@@ -111,17 +111,17 @@ export function ProductFormModal({
   function confirmArchive() {
     if (!item) return;
     Alert.alert(
-      "Arsipkan menu?",
-      `"${item.name}" tidak akan tampil lagi di menu kasir. Riwayat order lama tetap aman.`,
+      "Hapus menu?",
+      `"${item.name}" akan dihapus dari menu kasir. Riwayat order & laporan lama tetap aman.`,
       [
         { text: "Batal", style: "cancel" },
         {
-          text: "Arsipkan",
+          text: "Hapus",
           style: "destructive",
           onPress: () =>
             archive.mutate(item.id, {
               onSuccess: onClose,
-              onError: (e) => Alert.alert("Gagal mengarsipkan", errorMessage(e)),
+              onError: (e) => Alert.alert("Gagal menghapus", errorMessage(e)),
             }),
         },
       ],
@@ -204,7 +204,7 @@ export function ProductFormModal({
       {item ? (
         <Pressable onPress={confirmArchive} className="mt-8 h-11 flex-row items-center justify-center gap-2">
           <Trash2 size={18} color={colors.action} />
-          <AppText className="text-action">Arsipkan menu ini</AppText>
+          <AppText className="text-action">Hapus menu ini</AppText>
         </Pressable>
       ) : null}
     </AppModal>

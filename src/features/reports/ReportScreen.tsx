@@ -70,7 +70,7 @@ export default function ReportScreen() {
         contentContainerStyle={{ padding: 16, gap }}
         refreshControl={<RefreshControl refreshing={query.isRefetching} onRefresh={() => void query.refetch()} />}
       >
-        <View className="rounded-3xl border border-line bg-white p-4">
+        <View className="rounded-2xl border border-line bg-white p-4">
           <PeriodFilter value={period} onChange={setPeriod} />
         </View>
 
@@ -80,18 +80,20 @@ export default function ReportScreen() {
           </View>
         ) : (
           <>
+            {/* Urutan: hasil utama (Omzet, Laba) → biaya (HPP, Pengeluaran) → volume (Transaksi, Batal).
+                Di HP 2 kolom jadi 3 baris berpasangan. */}
             <View className="flex-row flex-wrap" style={{ gap }}>
               <KpiCard style={{ width: kpiWidth }} label="Omzet" value={formatRupiah(report.omzet)} tone="brand" hint="Tanpa pajak & service" />
-              <KpiCard style={{ width: kpiWidth }} label="Jumlah Transaksi" value={String(report.transactions)} />
-              <KpiCard style={{ width: kpiWidth }} label="Rata-rata / Transaksi" value={formatRupiah(report.average)} />
               <KpiCard
                 style={{ width: kpiWidth }}
                 label="Laba Sederhana"
                 value={formatRupiah(report.profit)}
                 tone={report.profit >= 0 ? "good" : "bad"}
-                hint={`HPP ${formatRupiah(report.hpp)}`}
+                hint="Omzet − HPP − Pengeluaran"
               />
+              <KpiCard style={{ width: kpiWidth }} label="HPP" value={formatRupiah(report.hpp)} hint="Modal bahan menu terjual" />
               <KpiCard style={{ width: kpiWidth }} label="Total Pengeluaran" value={formatRupiah(report.expenses)} />
+              <KpiCard style={{ width: kpiWidth }} label="Jumlah Transaksi" value={String(report.transactions)} />
               <KpiCard
                 style={{ width: kpiWidth }}
                 label="Order Dibatalkan"

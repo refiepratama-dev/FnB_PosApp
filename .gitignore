@@ -49,3 +49,6 @@ yarn-error.*
 qr-toko/
 qr-toko-*.png
 kode-toko-*.txt
+
+# file desain lokal (FigCraft, PDF draft) - tidak ikut repo
+design/

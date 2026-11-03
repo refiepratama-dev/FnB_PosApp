@@ -202,10 +202,7 @@ export function ProductFormModal({
       ) : null}
 
       {item ? (
-        <Pressable onPress={confirmArchive} className="mt-8 h-11 flex-row items-center justify-center gap-2">
-          <Trash2 size={18} color={colors.action} />
-          <AppText className="text-action">Hapus menu ini</AppText>
-        </Pressable>
+        <Button title="Hapus Menu" variant="action" icon={Trash2} className="mt-8" loading={archive.isPending} onPress={confirmArchive} />
       ) : null}
     </AppModal>
   );

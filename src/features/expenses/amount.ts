@@ -29,3 +29,10 @@ export function amountError(text: string): string | null {
   if (value > MAX_EXPENSE) return "Nominal terlalu besar";
   return null;
 }
+
+/** Kas kecil boleh nol, tetapi dibatasi agar sesuai kolom nominal di database. */
+export function pettyCashBalanceError(text: string): string | null {
+  const value = parseAmount(text);
+  if (value === null || value > MAX_EXPENSE) return "Saldo harus antara Rp0 dan Rp2.000.000.000";
+  return null;
+}

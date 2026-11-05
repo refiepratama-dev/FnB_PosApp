@@ -16,7 +16,8 @@ import type { Expense } from "@/types/database";
 import { ExpenseDetail } from "./ExpenseDetail";
 import { ExpenseFormModal } from "./ExpenseFormModal";
 import { groupExpensesByDate } from "./expenseGroups";
-import { useExpenses, useExpensesRealtime } from "./useExpenses";
+import { PettyCashModal } from "./PettyCashModal";
+import { useExpenses, useExpensesRealtime, usePettyCashSummary } from "./useExpenses";
 
 type MethodFilter = "all" | Expense["method"];
 
@@ -81,9 +82,12 @@ export default function ExpensesScreen() {
   const [search, setSearch] = useState("");
   const range = periodRange(period);
   const query = useExpenses(range);
+  const pettyCashQuery = usePettyCashSummary();
 
   const [formOpen, setFormOpen] = useState(false);
   const [editing, setEditing] = useState<Expense | null>(null); // null = pengeluaran baru
+  const [pettyCashOpen, setPettyCashOpen] = useState(false);
+  const [pettyCashAction, setPettyCashAction] = useState<"set" | "add">("set");
 
   const expenses = useMemo(() => query.data ?? [], [query.data]);
   const total = expenses.reduce((sum, e) => sum + e.amount, 0);
@@ -146,6 +150,63 @@ export default function ExpensesScreen() {
           <SummaryCard label="Jumlah Transaksi" value={String(expenses.length)} />
           <SummaryCard label="Total Pengeluaran" value={formatRupiah(total)} />
         </View>
+        <View className="rounded-2xl border border-line bg-white p-4">
+          {pettyCashQuery.isLoading || pettyCashQuery.error ? (
+            <View className="min-h-28">
+              <QueryState query={pettyCashQuery} />
+            </View>
+          ) : pettyCashQuery.data ? (
+            <>
+              <View className="flex-row items-start justify-between gap-3">
+                <View className="flex-1">
+                  <AppText variant="muted" className="text-xs">
+                    Sisa Kas Kecil
+                  </AppText>
+                  <AppText variant="heading" className="mt-1 text-xl text-brand">
+                    {formatRupiah(pettyCashQuery.data.remaining_balance)}
+                  </AppText>
+                </View>
+                <View className="flex-row gap-2">
+                  <Pressable
+                    onPress={() => {
+                      setPettyCashAction("set");
+                      setPettyCashOpen(true);
+                    }}
+                    className="rounded-full border border-brand px-3 py-2 active:bg-brand-soft"
+                  >
+                    <AppText variant="heading" className="text-sm text-brand">
+                      Atur Saldo
+                    </AppText>
+                  </Pressable>
+                  <Pressable
+                    onPress={() => {
+                      setPettyCashAction("add");
+                      setPettyCashOpen(true);
+                    }}
+                    className="rounded-full bg-brand px-3 py-2 active:opacity-80"
+                  >
+                    <AppText variant="heading" className="text-sm text-white">
+                      Tambah Kas
+                    </AppText>
+                  </Pressable>
+                </View>
+              </View>
+              <AppText variant="muted" className="mt-2 text-xs">
+                Dari kas kecil {formatRupiah(pettyCashQuery.data.spent_from_petty_cash)} · Dari pemasukan{" "}
+                {formatRupiah(pettyCashQuery.data.spent_from_income)}
+              </AppText>
+              {pettyCashQuery.data.opening_date ? (
+                <AppText variant="muted" className="mt-1 text-xs">
+                  Saldo terbawa otomatis dari hari ke hari.
+                </AppText>
+              ) : (
+                <AppText variant="muted" className="mt-1 text-xs">
+                  Owner atau kasir dapat mengatur atau menambah saldo kas kecil.
+                </AppText>
+              )}
+            </>
+          ) : null}
+        </View>
         <SearchInput value={search} onChangeText={setSearch} placeholder="Cari keterangan pengeluaran" />
         <View className="flex-row gap-2">
           <Chip label="Semua" active={method === "all"} onPress={() => setMethod("all")} />
@@ -199,6 +260,14 @@ export default function ExpensesScreen() {
         list
       )}
       {formModal}
+      {pettyCashQuery.data ? (
+        <PettyCashModal
+          visible={pettyCashOpen}
+          balance={pettyCashQuery.data.remaining_balance}
+          action={pettyCashAction}
+          onClose={() => setPettyCashOpen(false)}
+        />
+      ) : null}
     </View>
   );
 }

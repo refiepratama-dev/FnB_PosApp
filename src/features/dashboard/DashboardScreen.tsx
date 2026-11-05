@@ -29,7 +29,17 @@ export default function DashboardScreen() {
   const query = useReportData(range);
 
   const report = useMemo(
-    () => (query.data ? buildReport(query.data.orders, query.data.expenses, "today", range) : null),
+    () =>
+      query.data
+        ? buildReport(
+            query.data.orders,
+            query.data.expenses,
+            "today",
+            range,
+            query.data.expensesFromIncome,
+            query.data.pettyCashBalance,
+          )
+        : null,
     // eslint-disable-next-line react-hooks/exhaustive-deps
     [query.data, range.from],
   );
@@ -77,6 +87,9 @@ export default function DashboardScreen() {
               <KpiCard style={{ flex: 1 }} label="HPP" value={formatRupiah(report.hpp)} />
               <KpiCard style={{ flex: 1 }} label="Jumlah Order" value={String(report.transactions)} />
             </View>
+            <AppText variant="muted" className="text-[11px]">
+              Laba mengurangi pengeluaran dari pemasukan, bukan belanja yang dibayar dari kas kecil.
+            </AppText>
           </View>
         )}
       </View>

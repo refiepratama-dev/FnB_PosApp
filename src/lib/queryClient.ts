@@ -26,6 +26,7 @@ export const queryKeys = {
   orders: ["orders"] as const,
   members: ["members"] as const,
   expenses: ["expenses"] as const,
+  pettyCash: ["petty-cash"] as const,
   stock: ["stock"] as const,
   report: ["report"] as const,
 };

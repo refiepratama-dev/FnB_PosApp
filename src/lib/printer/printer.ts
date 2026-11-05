@@ -1,5 +1,5 @@
 import AsyncStorage from "@react-native-async-storage/async-storage";
-import { Linking, PermissionsAndroid, Platform } from "react-native";
+import { Linking, PermissionsAndroid, Platform, TurboModuleRegistry } from "react-native";
 import type { PrinterDevice } from "rn-escpos-printer";
 
 /**
@@ -21,6 +21,10 @@ let cached: EscPosModule | null | undefined;
 /** Ambil modul native secara malas, supaya Expo Go / web tidak crash saat aplikasi dibuka. */
 function native(): EscPosModule | null {
   if (cached !== undefined) return cached;
+  if (!TurboModuleRegistry.get("RnEscposPrinter")) {
+    cached = null;
+    return cached;
+  }
   try {
     // eslint-disable-next-line @typescript-eslint/no-require-imports
     cached = (require("rn-escpos-printer") as typeof import("rn-escpos-printer")).EscPosPrinter;

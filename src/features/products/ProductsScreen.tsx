@@ -11,6 +11,7 @@ import { SearchInput } from "@/components/SearchInput";
 import { colors } from "@/constants/colors";
 import { useCategories, useMenuItems } from "@/hooks/useMenu";
 import { formatRupiah } from "@/lib/format";
+import { sortMenuItemsByCategory } from "@/lib/menu";
 import type { MenuItem, MenuItemWithOptions } from "@/types/database";
 import { CategoryManagerModal } from "./CategoryManagerModal";
 import { GridList } from "@/components/GridList";
@@ -102,7 +103,7 @@ export default function ProductsScreen() {
 
   const visibleItems = useMemo(() => {
     const q = search.trim().toLowerCase();
-    return items.filter((m) => {
+    return sortMenuItemsByCategory(items, categories).filter((m) => {
       if (q && !m.name.toLowerCase().includes(q)) return false;
       if (filter === "all") return true;
       if (filter === "none") return !m.category_id || !categories.some((c) => c.id === m.category_id);

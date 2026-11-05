@@ -3,7 +3,7 @@
  * Aturan sesuai docs/05-BUSINESS-RULES-DATA.md bagian A "Laporan":
  * - Omzet = jumlah (subtotal - diskon) order LUNAS. Pajak & service tidak masuk omzet.
  * - Modal (HPP) = jumlah HPP x qty item terjual (item tanpa HPP = 0).
- * - Laba sederhana = omzet - HPP - pengeluaran.
+ * - Laba sederhana = omzet - HPP - pengeluaran yang dibiayai dari pemasukan (di luar kas kecil).
  * - Order DIBATALKAN tidak dihitung, hanya ditampilkan jumlahnya.
  */
 import type { Expense, OjolProvider, OrderType, OrderWithItems, PaymentMethod } from "@/types/database";
@@ -18,6 +18,9 @@ export type Report = {
   average: number;
   hpp: number;
   expenses: number;
+  expensesFromIncome: number;
+  expensesFromPettyCash: number;
+  pettyCashBalance: number;
   profit: number;
   collected: number; // uang yang benar-benar diterima (total termasuk pajak & service)
   cancelledCount: number;
@@ -79,6 +82,8 @@ export function buildReport(
   expenses: Pick<Expense, "amount">[],
   periodType: PeriodType,
   range: { from: string; to: string },
+  expensesFromIncome = expenses.reduce((s, e) => s + e.amount, 0),
+  pettyCashBalance = 0,
 ): Report {
   const paid = orders.filter((o) => o.status === "paid");
   const cancelled = orders.filter((o) => o.status === "cancelled");
@@ -141,7 +146,10 @@ export function buildReport(
     average: paid.length ? Math.round(omzet / paid.length) : 0,
     hpp,
     expenses: expenseTotal,
-    profit: omzet - hpp - expenseTotal,
+    expensesFromIncome,
+    expensesFromPettyCash: expenseTotal - expensesFromIncome,
+    pettyCashBalance,
+    profit: omzet - hpp - expensesFromIncome,
     collected,
     cancelledCount: cancelled.length,
     cancelledValue: cancelled.reduce((s, o) => s + o.total, 0),
@@ -153,24 +161,64 @@ export function buildReport(
   };
 }
 
-/** Satu baris "penjualan per menu" di laporan cetak (struk & PDF). */
-export type MenuSalesRow = { name: string; qty: number; revenue: number };
+/** Jumlah satu varian / topping yang dipesan (sudah dikali qty item). */
+export type OptionCount = { name: string; qty: number };
+
+/** Satu baris "penjualan per menu" di laporan (layar, struk & PDF). */
+export type MenuSalesRow = {
+  name: string;
+  qty: number;
+  revenue: number;
+  /** varian yang dipesan (misal Large x10), paling banyak dulu */
+  variants: OptionCount[];
+  /** topping yang dipesan (misal Boba x8), paling banyak dulu */
+  toppings: OptionCount[];
+};
 export type MenuSalesGroup = { category: string; qty: number; revenue: number; rows: MenuSalesRow[] };
 
+/** Menu yang dikenali buildMenuSales. option_groups (opsional) dipakai untuk membedakan varian & topping. */
+export type MenuSalesMenu = {
+  id: string;
+  name: string;
+  category_id: string | null;
+  option_groups?: { name: string; type: "variant" | "addon" }[];
+};
+
 /**
- * Semua menu, terjual maupun tidak, dikelompokkan per kategori (untuk laporan cetak).
+ * Pilihan di order_items hanya menyimpan nama grup (bukan jenisnya), jadi jenisnya dicari lewat
+ * grup opsi menu. Kalau menu/grupnya sudah dihapus atau diganti nama, ditebak dari nama grup:
+ * "Topping", "Tambahan", "Extra", "Add-on" = topping, selain itu = varian.
+ */
+function optionKind(menu: MenuSalesMenu | undefined, group: string): "variant" | "addon" {
+  const wanted = group.trim().toLowerCase();
+  const found = menu?.option_groups?.find((g) => g.name.trim().toLowerCase() === wanted);
+  if (found) return found.type;
+  return /topping|tambah|extra|add-?on/i.test(group) ? "addon" : "variant";
+}
+
+function sortCounts(counts: Map<string, number>): OptionCount[] {
+  return [...counts.entries()]
+    .map(([name, qty]) => ({ name, qty }))
+    .sort((a, b) => b.qty - a.qty || a.name.localeCompare(b.name, "id"));
+}
+
+type SoldAcc = { name: string; qty: number; revenue: number; variants: Map<string, number>; toppings: Map<string, number> };
+
+/**
+ * Semua menu, terjual maupun tidak, dikelompokkan per kategori (untuk laporan layar & cetak).
  * - Menu aktif yang tidak terjual tetap tampil dengan 0 porsi.
  * - Menu yang terjual tapi sudah dihapus/diganti nama masuk grup "Menu dihapus".
  * - Urutan grup = urutan kategori, lalu "Tanpa kategori", lalu "Menu dihapus".
  *   Di dalam grup: paling laku dulu, sisanya urut nama.
  * - Penjualan = harga satuan x porsi (sama dengan "Menu Terlaris").
+ * - Tiap menu juga membawa jumlah varian & topping yang dipesan (jumlah pilihan x qty item).
  */
 export function buildMenuSales(
   orders: OrderWithItems[],
-  menus: { id: string; name: string; category_id: string | null }[],
+  menus: MenuSalesMenu[],
   categories: { id: string; name: string }[],
 ): MenuSalesGroup[] {
-  const sold = new Map<string, MenuSalesRow>(); // key: menu id, atau "name:<nama>" kalau menu tidak ditemukan
+  const sold = new Map<string, SoldAcc>(); // key: menu id, atau "name:<nama>" kalau menu tidak ditemukan
   const menuById = new Map(menus.map((m) => [m.id, m]));
   const menuIdByName = new Map(menus.map((m) => [m.name.trim().toLowerCase(), m.id]));
 
@@ -179,10 +227,32 @@ export function buildMenuSales(
     for (const i of o.order_items) {
       const id = i.menu_item_id && menuById.has(i.menu_item_id) ? i.menu_item_id : menuIdByName.get(i.name.trim().toLowerCase());
       const key = id ?? `name:${i.name.trim()}`;
-      const cur = sold.get(key) ?? { name: id ? menuById.get(id)!.name : i.name.trim(), qty: 0, revenue: 0 };
-      sold.set(key, { ...cur, qty: cur.qty + i.qty, revenue: cur.revenue + i.unit_price * i.qty });
+      const menu = id ? menuById.get(id) : undefined;
+      const acc: SoldAcc = sold.get(key) ?? {
+        name: menu ? menu.name : i.name.trim(),
+        qty: 0,
+        revenue: 0,
+        variants: new Map(),
+        toppings: new Map(),
+      };
+      acc.qty += i.qty;
+      acc.revenue += i.unit_price * i.qty;
+      for (const opt of i.options ?? []) {
+        const target = optionKind(menu, opt.group) === "addon" ? acc.toppings : acc.variants;
+        const name = opt.name.trim();
+        target.set(name, (target.get(name) ?? 0) + i.qty);
+      }
+      sold.set(key, acc);
     }
   }
+
+  const toRow = (acc: SoldAcc): MenuSalesRow => ({
+    name: acc.name,
+    qty: acc.qty,
+    revenue: acc.revenue,
+    variants: sortCounts(acc.variants),
+    toppings: sortCounts(acc.toppings),
+  });
 
   const NO_CATEGORY = "Tanpa kategori";
   const DELETED = "Menu dihapus";
@@ -191,9 +261,10 @@ export function buildMenuSales(
 
   for (const m of menus) {
     const group = (m.category_id && categoryName.get(m.category_id)) || NO_CATEGORY;
-    groups.get(group)!.push(sold.get(m.id) ?? { name: m.name, qty: 0, revenue: 0 });
+    const acc = sold.get(m.id);
+    groups.get(group)!.push(acc ? toRow(acc) : { name: m.name, qty: 0, revenue: 0, variants: [], toppings: [] });
   }
-  for (const [key, row] of sold) if (key.startsWith("name:")) groups.get(DELETED)!.push(row);
+  for (const [key, acc] of sold) if (key.startsWith("name:")) groups.get(DELETED)!.push(toRow(acc));
 
   return [...groups.entries()]
     .filter(([, rows]) => rows.length > 0)

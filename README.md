@@ -35,6 +35,7 @@ Semua keputusan produk ada di folder [`docs/`](docs/00-README.md).
    (minta ke Refie lewat chat pribadi). **File `.env` jangan pernah di-commit.**
 4. Install **APK development TemanPOS** di HP/tablet Android (link minta ke Refie).
    > Expo Go **tidak dipakai lagi**: fitur printer Bluetooth hanya jalan di development build.
+   > Jika muncul error `RnEscposPrinter could not be found`, gunakan APK TemanPOS yang dibuild ulang dengan library printer; reload JavaScript tidak dapat menambahkan modul native ke APK lama.
 
 ## Menjalankan app
 

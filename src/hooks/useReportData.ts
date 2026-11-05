@@ -27,7 +27,7 @@ export function useReportData(range: DateRange) {
     queryKey: [...queryKeys.report, range.from, range.to],
     queryFn: async () => {
       const supabase = getSupabase();
-      const [orders, expenses] = await Promise.all([
+      const [orders, expenses, incomeFundedExpenses, pettyCashSummary] = await Promise.all([
         fetchAll<OrderWithItems>((from, to) =>
           supabase
             .from("orders")
@@ -48,8 +48,20 @@ export function useReportData(range: DateRange) {
             .order("id", { ascending: false }) // urutan tetap supaya pembagian halaman tidak menggandakan / melewatkan baris
             .range(from, to),
         ),
+        supabase.rpc("get_expenses_from_income", { p_from: range.from, p_to: range.to }),
+        supabase.rpc("get_petty_cash_summary"),
       ]);
-      return { orders, expenses };
+      if (incomeFundedExpenses.error) throw incomeFundedExpenses.error;
+      if (incomeFundedExpenses.data == null) throw new Error("Biaya dari pemasukan tidak dapat dihitung.");
+      if (pettyCashSummary.error) throw pettyCashSummary.error;
+      const pettyCash = pettyCashSummary.data?.[0];
+      if (!pettyCash) throw new Error("Saldo kas kecil tidak tersedia.");
+      return {
+        orders,
+        expenses,
+        expensesFromIncome: Number(incomeFundedExpenses.data),
+        pettyCashBalance: Number(pettyCash.remaining_balance),
+      };
     },
   });
 }

@@ -23,6 +23,9 @@ export type StoreSettings = {
   receipt_footer: string;
   paper_size: "58" | "80";
   timezone: string;
+  petty_cash_opening_balance: number;
+  petty_cash_opening_date: string | null;
+  petty_cash_opening_at: string | null;
   updated_at: string;
 };
 

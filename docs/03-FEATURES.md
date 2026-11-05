@@ -105,6 +105,9 @@ Kasir boleh melihat laba & harga modal.
 - Kasir & owner bisa **tambah, edit, hapus**
 - Tampilan seperti halaman Order: kartu merah **Jumlah Transaksi** & **Total Pengeluaran**, cari keterangan, filter Semua / Tunai / Transfer, daftar dikelompokkan per tanggal. Tablet: daftar + detail berdampingan; HP: tap baris → halaman detail. Tombol **Ubah** & **Hapus** di bawah detail (posisi sama dengan Cetak Ulang & Batalkan di Order).
 - Laporan owner menampilkan **laba sederhana** = omzet − modal (HPP) − pengeluaran
+- Bagian **Kas Kecil** pada laporan menampilkan sisa saldo saat ini serta pengeluaran dari kas kecil dan pemasukan pada periode terpilih. Ringkasan ini juga disertakan pada PDF dan struk laporan.
+- **Kas kecil:** owner atau kasir dapat mengatur saldo atau menambah kas dari halaman Pengeluaran. Pengeluaran memakai saldo kas kecil terlebih dahulu; setelah habis, sisanya dihitung dari pemasukan. Saat kas ditambah, jumlahnya terlebih dahulu mengganti pengeluaran yang sebelumnya memakai pemasukan; kelebihannya menjadi saldo kas kecil. Saldo tersisa terbawa otomatis ke hari berikutnya. Pengaturan ulang saldo memulai perhitungan baru pada hari itu. Belanja yang dibiayai kas kecil tidak mengurangi laba sederhana; hanya bagian yang masih dibiayai pemasukan yang dikurangkan.
+- Ringkasan kas kecil menampilkan saldo tersisa, total yang sudah dibiayai dari kas kecil, dan total yang dihitung dari pemasukan. Pengeluaran tetap masuk ke total laporan seperti biasa.
 
 ## 13. Self-order: TIDAK DIBUAT ✅
 - Tidak ada scan QR di meja / pelanggan pesan sendiri

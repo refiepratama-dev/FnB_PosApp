@@ -25,7 +25,9 @@ Total akhir **tidak dibulatkan** **(usulan)**. Semua angka rupiah dibulatkan ke 
 ### Laporan
 - **Omzet** = jumlah (subtotal − diskon) dari order Lunas. Pajak & service tidak masuk omzet **(usulan)**.
 - **Modal (HPP)** = jumlah HPP item terjual (item tanpa HPP dihitung 0).
-- **Laba sederhana** = omzet − HPP − pengeluaran.
+- **Laba sederhana** = omzet − HPP − pengeluaran yang dibiayai dari pemasukan. Pengeluaran yang ditutup saldo kas kecil tidak mengurangi laba; bila belanja kumulatif melampaui kas kecil, hanya kelebihannya yang mengurangi laba.
+- Laporan menampilkan saldo kas kecil tersisa saat ini (saldo terbaru) dan pembagian pengeluaran kas kecil vs pemasukan untuk periode laporan yang dipilih.
+- Saat kas kecil ditambah, top-up lebih dulu mengganti bagian pengeluaran yang sebelumnya dibiayai pemasukan; sisanya menambah saldo kas kecil. Karena itu sumber dana pengeluaran pada laporan sebelumnya dapat dikoreksi setelah top-up.
 - Order **Dibatalkan** tidak dihitung di semua angka di atas, hanya di "Order Dibatalkan".
 - Komisi ojol tidak dihitung app (sudah dianggap tertutup oleh persen kenaikan harga ojol).
 
@@ -81,7 +83,11 @@ Sumber kebenaran: `supabase/migrations/`. Tabel ini ringkasannya.
 | `orders` | Nomor `TP-YYMMDD-001`, tipe, provider ojol, meja, pelanggan, member, subtotal, diskon, service, pajak, total, metode bayar, sumber uang ojol, status (`paid`/`cancelled`) |
 | `order_items` | Salinan nama, harga satuan, HPP, jumlah, catatan, pilihan (`options` JSON) |
 | `expenses` | Keterangan, nominal, metode, foto nota, tanggal |
+| `store_settings` | Saldo kas kecil yang tersedia dan waktu mulai perhitungan |
+| `petty_cash_replenishments` | Riwayat penambahan kas kecil |
 | `stock_movements` | Riwayat stok: `add`, `adjust`, `sale`, `cancel` |
+
+**Kas kecil:** Owner atau kasir dapat mengatur jumlah yang tersedia saat ini. Semua pengeluaran sejak waktu mulai mengurangi saldo tersebut; saldo tidak turun di bawah nol, dan kelebihannya dihitung dari pemasukan (termasuk semua metode pembayaran). Saat ada top-up, bagian yang sebelumnya memakai pemasukan dikembalikan terlebih dahulu, lalu sisanya menjadi saldo kas kecil. Saldo sisa terbawa otomatis ke hari berikutnya. Mengatur ulang saldo memulai perhitungan baru pada tanggal bisnis toko saat ini.
 
 **Harga varian & topping:** `harga item = harga dasar + jumlah price_delta pilihan` (varian juga berupa tambahan harga, misal Regular +0, Large +5.000).
 

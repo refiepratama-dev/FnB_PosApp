@@ -10,6 +10,7 @@ import { usePrintReceipt } from "@/hooks/usePrintReceipt";
 import { useStoreSettings } from "@/hooks/useStoreSettings";
 import { errorMessage } from "@/lib/errors";
 import { playCekring, successFeedback, tapFeedback } from "@/lib/feedback";
+import { sortMenuItemsByCategory } from "@/lib/menu";
 import { calcOrderTotals, type SelectedOption } from "@/lib/pricing";
 import type { MenuItemWithOptions, OjolCashSource, Order, PaymentMethod } from "@/types/database";
 import { lineUnitPrice, qtyInCart, useCart, type CartLine } from "./cartStore";
@@ -62,10 +63,10 @@ export default function CashierMenuScreen() {
 
   const visibleItems = useMemo(() => {
     const s = search.trim().toLowerCase();
-    return (menu.data ?? []).filter(
+    return sortMenuItemsByCategory(menu.data ?? [], categories.data ?? []).filter(
       (item) => (!categoryId || item.category_id === categoryId) && (!s || item.name.toLowerCase().includes(s)),
     );
-  }, [menu.data, categoryId, search]);
+  }, [menu.data, categories.data, categoryId, search]);
 
   function addToCart(item: MenuItemWithOptions, options: SelectedOption[] = [], note = "", qty = 1) {
     const ok = cart.addItem(item, options, note, qty);

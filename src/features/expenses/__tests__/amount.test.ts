@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { MAX_EXPENSE, amountError, digitsOnly, groupThousands, parseAmount } from "../amount";
+import { MAX_EXPENSE, amountError, digitsOnly, groupThousands, parseAmount, pettyCashBalanceError } from "../amount";
 
 describe("digitsOnly", () => {
   it("membuang selain angka dan nol di depan", () => {
@@ -37,5 +37,17 @@ describe("amountError", () => {
     expect(amountError("1")).toBeNull();
     expect(amountError("15.000")).toBeNull();
     expect(amountError(String(MAX_EXPENSE))).toBeNull();
+  });
+});
+
+describe("pettyCashBalanceError", () => {
+  it("menerima saldo nol dan nominal sampai batas database", () => {
+    expect(pettyCashBalanceError("0")).toBeNull();
+    expect(pettyCashBalanceError(String(MAX_EXPENSE))).toBeNull();
+  });
+
+  it("menolak input kosong dan nominal yang melebihi batas", () => {
+    expect(pettyCashBalanceError("")).not.toBeNull();
+    expect(pettyCashBalanceError(String(MAX_EXPENSE + 1))).not.toBeNull();
   });
 });

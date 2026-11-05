@@ -10,6 +10,65 @@ import type { Expense } from "@/types/database";
 function refreshAll(queryClient: QueryClient) {
   queryClient.invalidateQueries({ queryKey: queryKeys.expenses });
   queryClient.invalidateQueries({ queryKey: queryKeys.report });
+  queryClient.invalidateQueries({ queryKey: queryKeys.pettyCash });
+}
+
+export type PettyCashSummary = {
+  opening_balance: number;
+  opening_date: string | null;
+  spent_from_petty_cash: number;
+  spent_from_income: number;
+  remaining_balance: number;
+};
+
+/** Saldo kas kecil berjalan, dihitung di database dari saldo awal dan seluruh pengeluaran sejak tanggal mulai. */
+export function usePettyCashSummary() {
+  return useQuery({
+    queryKey: queryKeys.pettyCash,
+    queryFn: async () => {
+      const { data, error } = await getSupabase().rpc("get_petty_cash_summary");
+      if (error) throw error;
+      const summary = data?.[0] as PettyCashSummary | undefined;
+      if (!summary) throw new Error("Ringkasan kas kecil tidak tersedia.");
+      return {
+        ...summary,
+        opening_balance: Number(summary.opening_balance),
+        spent_from_petty_cash: Number(summary.spent_from_petty_cash),
+        spent_from_income: Number(summary.spent_from_income),
+        remaining_balance: Number(summary.remaining_balance),
+      };
+    },
+  });
+}
+
+/** Atur kas yang tersedia mulai hari ini; saldo sisa otomatis berlanjut ke hari berikutnya. */
+export function useSetPettyCashBalance() {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: async (balance: number) => {
+      const { error } = await getSupabase().rpc("set_petty_cash_balance", { p_balance: balance });
+      if (error) throw error;
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: queryKeys.pettyCash });
+      queryClient.invalidateQueries({ queryKey: queryKeys.report });
+    },
+  });
+}
+
+/** Tambah kas kecil; saldo yang sempat memakai pemasukan dikembalikan terlebih dahulu. */
+export function useAddPettyCash() {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: async (amount: number) => {
+      const { error } = await getSupabase().rpc("add_petty_cash", { p_amount: amount });
+      if (error) throw error;
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: queryKeys.pettyCash });
+      queryClient.invalidateQueries({ queryKey: queryKeys.report });
+    },
+  });
 }
 
 /** Pengeluaran dalam satu periode (tanggal terbaru di atas). */
@@ -115,6 +174,14 @@ export function useExpensesRealtime() {
     const channel = supabase
       .channel(`expenses-${Math.random().toString(36).slice(2)}`)
       .on("postgres_changes", { event: "*", schema: "public", table: "expenses" }, () => refreshAll(queryClient))
+      .on("postgres_changes", { event: "*", schema: "public", table: "store_settings" }, () => {
+        queryClient.invalidateQueries({ queryKey: queryKeys.pettyCash });
+        queryClient.invalidateQueries({ queryKey: queryKeys.report });
+      })
+      .on("postgres_changes", { event: "*", schema: "public", table: "petty_cash_replenishments" }, () => {
+        queryClient.invalidateQueries({ queryKey: queryKeys.pettyCash });
+        queryClient.invalidateQueries({ queryKey: queryKeys.report });
+      })
       .subscribe();
     return () => {
       supabase.removeChannel(channel);

@@ -1,5 +1,5 @@
 import { formatDateTime, formatRupiah } from "@/lib/format";
-import type { MenuSalesGroup, Report } from "@/lib/report";
+import type { MenuSalesGroup, OptionCount, Report } from "@/lib/report";
 import { orderTypeLabel, paymentLabel, type ReportMeta } from "@/features/reports/reportExport";
 import { CMD, center, charsPerLine, divider, row } from "./escpos";
 import { header, joinLines, type ReceiptStore } from "./receipt";
@@ -10,8 +10,22 @@ function section(title: string): string {
 }
 
 /**
+ * Rincian varian / topping di bawah satu menu, menjorok ke dalam:
+ *   Varian:
+ *     Large          10x
+ * (indentasi ditambahkan setelah teks dipecah, karena wrap() membuang spasi di awal baris)
+ */
+function optionLines(title: string, counts: OptionCount[], width: number): string[] {
+  if (counts.length === 0) return [];
+  const out = [`  ${title}:`];
+  for (const c of counts) out.push(...row(c.name, `${c.qty}x`, width - 4).map((line) => `    ${line}`));
+  return out;
+}
+
+/**
  * Laporan ringkas di printer thermal (58 / 80 mm):
- * ringkasan angka, metode bayar, tipe pesanan, dan semua menu (terjual maupun tidak) per kategori.
+ * ringkasan angka, metode bayar, tipe pesanan, dan semua menu (terjual maupun tidak) per kategori,
+ * lengkap dengan jumlah varian & topping yang dipesan di bawah tiap menu.
  */
 export function buildReportReceipt(report: Report, meta: ReportMeta, store: ReceiptStore, menuSales: MenuSalesGroup[]): string {
   const width = charsPerLine(store.paper_size);
@@ -24,6 +38,9 @@ export function buildReportReceipt(report: Report, meta: ReportMeta, store: Rece
   out.push(...row("Omzet", formatRupiah(report.omzet), width));
   out.push(...row("HPP", formatRupiah(report.hpp), width));
   out.push(...row("Pengeluaran", formatRupiah(report.expenses), width));
+  out.push(...row("Kas kecil tersisa*", formatRupiah(report.pettyCashBalance), width));
+  out.push(...row("Dari kas kecil", formatRupiah(report.expensesFromPettyCash), width));
+  out.push(...row("Dari pemasukan", formatRupiah(report.expensesFromIncome), width));
   out.push(`${CMD.boldOn}${row("Laba Sederhana", formatRupiah(report.profit), width).join("\n")}${CMD.boldOff}`);
   out.push(...row("Jumlah Order", String(report.transactions), width));
   out.push(
@@ -46,7 +63,10 @@ export function buildReportReceipt(report: Report, meta: ReportMeta, store: Rece
   if (menuSales.length === 0) out.push("-");
   for (const g of menuSales) {
     out.push(`${CMD.boldOn}${row(`${g.category} (${g.qty})`, formatRupiah(g.revenue), width).join("\n")}${CMD.boldOff}`);
-    for (const r of g.rows) out.push(...row(`- ${r.name} (${r.qty})`, r.qty ? formatRupiah(r.revenue) : "-", width));
+    for (const r of g.rows) {
+      out.push(...row(`- ${r.name} (${r.qty})`, r.qty ? formatRupiah(r.revenue) : "-", width));
+      out.push(...optionLines("Varian", r.variants, width), ...optionLines("Topping", r.toppings, width));
+    }
   }
   out.push(divider(width));
 

@@ -38,12 +38,17 @@ const A4 = { width: 595, height: 842 };
 export async function shareReportPdf(report: Report, meta: ReportMeta, expenses: Expense[], menuSales: MenuSalesGroup[]): Promise<void> {
   const { Print, Sharing, FileSystem } = loadPdfModules();
   const { File, Paths } = FileSystem;
-  const { uri } = await Print.printToFileAsync({ html: buildReportHtml(report, meta, expenses, menuSales), ...A4 });
+  const { base64 } = await Print.printToFileAsync({
+    html: buildReportHtml(report, meta, expenses, menuSales),
+    ...A4,
+    base64: true,
+  });
+  if (!base64) throw new Error("PDF tidak dapat disiapkan untuk dibagikan.");
 
-  // printToFileAsync memberi nama acak -> pindahkan ke nama yang rapi
+  // Di Expo Go, expo-file-system bisa tidak memiliki izin baca ke file cache milik expo-print.
   const target = new File(Paths.cache, reportFileName(meta));
   if (target.exists) target.delete();
-  new File(uri).moveSync(target);
+  await target.write(base64, { encoding: "base64" });
 
   if (!(await Sharing.isAvailableAsync())) throw new Error("Fitur bagikan file tidak tersedia di perangkat ini.");
   await Sharing.shareAsync(target.uri, {

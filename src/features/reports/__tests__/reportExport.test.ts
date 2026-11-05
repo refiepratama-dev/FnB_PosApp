@@ -9,6 +9,9 @@ const report: Report = {
   average: 50000,
   hpp: 60000,
   expenses: 20000,
+  expensesFromIncome: 20000,
+  expensesFromPettyCash: 0,
+  pettyCashBalance: 80000,
   profit: 70000,
   collected: 165000,
   cancelledCount: 1,
@@ -31,8 +34,17 @@ const menuSales: MenuSalesGroup[] = [
     qty: 4,
     revenue: 80000,
     rows: [
-      { name: "Kopi <Susu>", qty: 4, revenue: 80000 },
-      { name: "Teh Tawar", qty: 0, revenue: 0 },
+      {
+        name: "Kopi <Susu>",
+        qty: 4,
+        revenue: 80000,
+        variants: [
+          { name: "Regular", qty: 3 },
+          { name: "Large", qty: 1 },
+        ],
+        toppings: [{ name: "Boba <Besar>", qty: 2 }],
+      },
+      { name: "Teh Tawar", qty: 0, revenue: 0, variants: [], toppings: [] },
     ],
   },
 ];
@@ -80,7 +92,16 @@ describe("buildReportHtml", () => {
     expect(html).toContain("Jam 11:00");
     expect(html).not.toContain("Jam 10:00"); // jam tanpa penjualan tidak ditampilkan
     expect(html).toContain("Penjualan per Menu");
+    expect(html).toContain("Kas Kecil");
+    expect(html).toContain("Sisa saldo saat ini");
+    expect(html).toContain("Rp80.000");
     expect(html).toContain("Teh Tawar"); // menu tidak terjual tetap ada
+  });
+
+  it("menampilkan jumlah varian & topping per menu", () => {
+    expect(html).toContain("<b>Varian:</b> Regular ×3 · Large ×1");
+    expect(html).toContain("<b>Topping:</b> Boba &lt;Besar&gt; ×2");
+    expect(html).not.toContain("<Besar>");
   });
 
   it("teks dari pengguna di-escape", () => {
@@ -99,7 +120,15 @@ describe("buildReportReceipt", () => {
     expect(plain).toContain("Laba Sederhana");
     expect(plain).toContain("Rp70.000");
     expect(plain).toContain("PENJUALAN PER MENU");
+    expect(plain).toContain("Kas kecil tersisa*");
+    expect(plain).toContain("Dari kas kecil");
     expect(plain).toContain("- Teh Tawar (0)");
+    // rincian varian & topping di bawah menu
+    expect(plain).toContain("  Varian:");
+    expect(plain).toMatch(/^ {4}Regular +3x$/m);
+    expect(plain).toMatch(/^ {4}Large +1x$/m);
+    expect(plain).toContain("  Topping:");
+    expect(plain).toMatch(/^ {4}Boba <Besar> +2x$/m);
     for (const line of plain.split("\n")) expect(line.length).toBeLessThanOrEqual(32);
   });
 });

@@ -8,14 +8,16 @@ import { QueryState } from "@/components/QueryState";
 import { ScreenHeader } from "@/components/ScreenHeader";
 import { PAYMENT_METHOD_LABEL } from "@/constants/labels";
 import { useExpensesRealtime } from "@/features/expenses/useExpenses";
+import { useCategories, useMenuItems } from "@/hooks/useMenu";
 import { useReportData } from "@/hooks/useReportData";
 import { useStoreSettings } from "@/hooks/useStoreSettings";
 import { formatRupiah } from "@/lib/format";
 import { periodRange, todayPeriod } from "@/lib/period";
-import { buildReport, type OrderTypeKey } from "@/lib/report";
+import { buildMenuSales, buildReport, type OrderTypeKey } from "@/lib/report";
 import type { PaymentMethod } from "@/types/database";
 import { BarChart } from "./BarChart";
 import { KpiCard } from "./KpiCard";
+import { MenuSalesList } from "./MenuSalesList";
 import { PrintReportModal } from "./PrintReportModal";
 import { reportMeta, TYPE_LABEL } from "./reportExport";
 import { ShareList } from "./ShareList";
@@ -52,9 +54,27 @@ export default function ReportScreen() {
   const [printOpen, setPrintOpen] = useState(false);
 
   const report = useMemo(
-    () => (query.data ? buildReport(query.data.orders, query.data.expenses, period.type, range) : null),
+    () =>
+      query.data
+        ? buildReport(
+            query.data.orders,
+            query.data.expenses,
+            period.type,
+            range,
+            query.data.expensesFromIncome,
+            query.data.pettyCashBalance,
+          )
+        : null,
     // eslint-disable-next-line react-hooks/exhaustive-deps
     [query.data, period.type, range.from, range.to],
+  );
+
+  // penjualan per menu + jumlah varian & topping (butuh daftar menu & kategori untuk pengelompokan)
+  const menus = useMenuItems();
+  const categories = useCategories();
+  const menuSales = useMemo(
+    () => (query.data && menus.data && categories.data ? buildMenuSales(query.data.orders, menus.data, categories.data) : null),
+    [query.data, menus.data, categories.data],
   );
 
   const wide = width >= 860; // tablet landscape: 2 kolom
@@ -72,7 +92,11 @@ export default function ReportScreen() {
       />
       <ScrollView
         contentContainerStyle={{ padding: 16, gap }}
-        refreshControl={<RefreshControl refreshing={query.isRefetching} onRefresh={() => void query.refetch()} />}
+        refreshControl={<RefreshControl refreshing={query.isRefetching} onRefresh={() => {
+          void query.refetch();
+          void menus.refetch();
+          void categories.refetch();
+        }} />}
       >
         <View className="rounded-2xl border border-line bg-white p-4">
           <PeriodFilter value={period} onChange={setPeriod} />
@@ -105,6 +129,38 @@ export default function ReportScreen() {
                 hint={report.cancelledCount ? formatRupiah(report.cancelledValue) : undefined}
               />
             </View>
+
+            <Section title="Kas Kecil">
+              <View className="flex-row flex-wrap gap-3">
+                <View className="min-w-[45%] flex-1">
+                  <AppText variant="muted" className="text-xs">
+                    Sisa saldo saat ini
+                  </AppText>
+                  <AppText variant="heading" className="mt-1 text-lg text-brand">
+                    {formatRupiah(report.pettyCashBalance)}
+                  </AppText>
+                </View>
+                <View className="min-w-[45%] flex-1">
+                  <AppText variant="muted" className="text-xs">
+                    Pengeluaran dari kas kecil · periode ini
+                  </AppText>
+                  <AppText variant="heading" className="mt-1 text-lg">
+                    {formatRupiah(report.expensesFromPettyCash)}
+                  </AppText>
+                </View>
+                <View className="min-w-[45%] flex-1">
+                  <AppText variant="muted" className="text-xs">
+                    Pengeluaran dari pemasukan · periode ini
+                  </AppText>
+                  <AppText variant="heading" className="mt-1 text-lg">
+                    {formatRupiah(report.expensesFromIncome)}
+                  </AppText>
+                </View>
+              </View>
+              <AppText variant="muted" className="mt-3 text-[11px]">
+                Saldo saat ini adalah posisi kas kecil terbaru; dua angka pengeluaran mengikuti periode laporan yang dipilih.
+              </AppText>
+            </Section>
 
             <View className={wide ? "flex-row" : ""} style={{ gap }}>
               <Section title={isHourly ? "Penjualan per Jam" : "Penjualan per Hari"} style={wide ? { width: half } : undefined}>
@@ -159,8 +215,22 @@ export default function ReportScreen() {
                 </Section>
               </View>
             </View>
+            <Section title="Penjualan per Menu">
+              {menuSales ? (
+                <MenuSalesList groups={menuSales} />
+              ) : (
+                <AppText variant="muted" className="py-4 text-center text-sm">
+                  {menus.error || categories.error ? "Daftar menu gagal dimuat. Tarik layar ke bawah untuk coba lagi." : "Memuat daftar menu..."}
+                </AppText>
+              )}
+              <AppText variant="muted" className="mt-3 text-[11px]">
+                Angka varian & topping = jumlah porsi yang dipesan dengan pilihan itu.
+              </AppText>
+            </Section>
+
             <AppText variant="muted" className="text-center text-[11px]">
-              Metode bayar & tipe pesanan dihitung dari total yang dibayar (termasuk pajak & service).
+              Metode bayar & tipe pesanan dihitung dari total yang dibayar (termasuk pajak & service). Laba hanya
+              mengurangi pengeluaran yang dibiayai dari pemasukan, bukan kas kecil.
             </AppText>
           </>
         )}

@@ -50,6 +50,28 @@ describe("buildReport", () => {
     expect(r.cancelledValue).toBe(50000);
   });
 
+  it("pengeluaran dari kas kecil tetap tercatat, tetapi tidak mengurangi laba", () => {
+    const r = buildReport([], [{ amount: 50000 }], "today", day, 0);
+    expect(r.expenses).toBe(50000);
+    expect(r.expensesFromIncome).toBe(0);
+    expect(r.expensesFromPettyCash).toBe(50000);
+    expect(r.pettyCashBalance).toBe(0);
+    expect(r.profit).toBe(0);
+  });
+
+  it("hanya bagian pengeluaran yang melebihi kas kecil mengurangi laba", () => {
+    const r = buildReport(
+      [order({ items: [{ name: "Kopi", qty: 1, unit_price: 100000, cost_price: 0 }] })],
+      [{ amount: 150000 }],
+      "today",
+      day,
+      50000,
+    );
+    expect(r.expenses).toBe(150000);
+    expect(r.expensesFromIncome).toBe(50000);
+    expect(r.profit).toBe(50000);
+  });
+
   it("menu terlaris urut jumlah porsi", () => {
     const r = buildReport(
       [order({ items: [{ name: "Kopi", qty: 3, unit_price: 10000 }, { name: "Steak", qty: 1, unit_price: 50000 }] }), order({ items: [{ name: "Kopi", qty: 1, unit_price: 10000 }] })],

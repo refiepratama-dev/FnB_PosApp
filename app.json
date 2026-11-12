@@ -2,7 +2,7 @@
   "expo": {
     "name": "TemanPOS",
     "slug": "temanpos",
-    "version": "1.1.0",
+    "version": "1.2.0",
     "orientation": "default",
     "icon": "./assets/icon.png",
     "userInterfaceStyle": "light",
@@ -23,6 +23,8 @@
       "predictiveBackGestureEnabled": false,
       "package": "com.temanpos.app",
       "permissions": [
+        "android.permission.CAMERA",
+        "android.permission.BLUETOOTH_CONNECT",
         "android.permission.CAMERA",
         "android.permission.BLUETOOTH_CONNECT"
       ]
@@ -64,22 +66,22 @@
       ],
       "expo-sharing"
     ],
-    "extra": {
+   "extra": {
       "router": {
         "asyncRoutes": {
           "web": true
         }
       },
       "eas": {
-        "projectId": "2723a5bc-f303-414f-b5d3-a06069d5c7ae"
+        "projectId": "21e655fd-2edf-4de6-8445-800135858073"
       }
     },
-    "owner": "refie",
+    "owner": "fari45",
     "runtimeVersion": {
       "policy": "appVersion"
     },
     "updates": {
-      "url": "https://u.expo.dev/2723a5bc-f303-414f-b5d3-a06069d5c7ae"
+      "url": "https://u.expo.dev/21e655fd-2edf-4de6-8445-800135858073"
     }
   }
 }

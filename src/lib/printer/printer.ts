@@ -1,6 +1,7 @@
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { Linking, PermissionsAndroid, Platform, TurboModuleRegistry } from "react-native";
 import type { PrinterDevice } from "rn-escpos-printer";
+import { isUsbSupported, printUsb } from "./usb";
 
 /**
  * Sambungan ke printer thermal Bluetooth (pakai library rn-escpos-printer).
@@ -11,7 +12,19 @@ import type { PrinterDevice } from "rn-escpos-printer";
  * - Tidak jalan di Expo Go / web: perlu development build (lihat docs).
  */
 
-export type SavedPrinter = { id: string; name: string };
+export type PrinterTransport = "bluetooth" | "usb";
+
+/**
+ * Printer yang dipilih di device ini.
+ * transport kosong = Bluetooth (data lama sebelum ada USB). Untuk USB, id berisi "usb:vendor:product".
+ */
+export type SavedPrinter = {
+  id: string;
+  name: string;
+  transport?: PrinterTransport;
+  vendorId?: number;
+  productId?: number;
+};
 
 const STORAGE_KEY = "temanpos.printer";
 
@@ -34,9 +47,9 @@ function native(): EscPosModule | null {
   return cached;
 }
 
-/** true kalau aplikasi ini bisa mencetak (development build / APK, bukan Expo Go / web). */
+/** true kalau aplikasi ini bisa mencetak lewat Bluetooth atau USB (development build / APK, bukan Expo Go / web). */
 export function isPrinterSupported(): boolean {
-  return Platform.OS !== "web" && native() !== null;
+  return Platform.OS !== "web" && (native() !== null || isUsbSupported());
 }
 
 function requireNative(): EscPosModule {
@@ -109,18 +122,12 @@ async function connectTo(mod: EscPosModule, printerId: string): Promise<void> {
   connectedId = printerId;
 }
 
-/**
- * Cetak teks (hasil buildReceipt / buildTestPage) ke printer.
- * printerId kosong -> pakai printer yang tersimpan di Setting.
- * Kalau sambungan putus di tengah jalan (printer sempat mati), dicoba sekali lagi.
- */
-export async function printText(text: string, printerId?: string): Promise<void> {
+/** Cetak lewat Bluetooth. Kalau sambungan putus di tengah jalan (printer sempat mati), dicoba sekali lagi. */
+async function printBluetooth(text: string, printerId: string): Promise<void> {
   const mod = await ready();
-  const id = printerId ?? (await getSavedPrinter())?.id;
-  if (!id) throw new Error("Printer belum dipilih. Buka Setting > Printer.");
 
   const send = async () => {
-    await connectTo(mod, id);
+    await connectTo(mod, printerId);
     await mod.printText(text, { codePage: "cp850", feedLines: 4, cut: true });
   };
 
@@ -134,6 +141,32 @@ export async function printText(text: string, printerId?: string): Promise<void>
       throw new Error(printerErrorMessage(first));
     }
   }
+}
+
+/**
+ * Cetak teks (hasil buildReceipt / buildTestPage) ke printer.
+ * target kosong -> pakai printer yang tersimpan di Setting.
+ * target string -> id printer Bluetooth (cara lama). target objek -> printer apa saja (Bluetooth / USB).
+ * Printer USB dikirim lewat kabel OTG, printer Bluetooth lewat library rn-escpos-printer.
+ */
+export async function printText(text: string, target?: string | SavedPrinter): Promise<void> {
+  let printer: SavedPrinter | null;
+  if (typeof target === "object") {
+    printer = target;
+  } else {
+    const saved = await getSavedPrinter();
+    printer = target ? (saved && saved.id === target ? saved : { id: target, name: target }) : saved;
+  }
+  if (!printer) throw new Error("Printer belum dipilih. Buka Setting > Printer.");
+
+  if (printer.transport === "usb") {
+    if (printer.vendorId === undefined || printer.productId === undefined) {
+      throw new Error("Data printer USB tidak lengkap. Pilih printer USB lagi di Setting > Printer.");
+    }
+    await printUsb(text, printer.vendorId, printer.productId);
+    return;
+  }
+  await printBluetooth(text, printer.id);
 }
 
 /** Buka halaman Pengaturan Bluetooth Android (untuk pairing printer baru). */

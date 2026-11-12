@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
 import { CMD, charsPerLine, row, sanitize, wrap } from "@/lib/printer/escpos";
-import { buildReceipt, buildTestPage } from "@/lib/printer/receipt";
+import { buildKitchenTicket, buildReceipt, buildTestPage } from "@/lib/printer/receipt";
 import type { Order, OrderItem } from "@/types/database";
 
 /** Buang perintah ESC/POS supaya yang tersisa teks yang tercetak. */
@@ -138,5 +138,35 @@ describe("buildTestPage", () => {
     const plain = visible(buildTestPage({ name: "Toko" }, "58", "Iware")).split("\n");
     expect(plain).toContain("12345678901234567890123456789012");
     plain.forEach((l) => expect(l.length).toBeLessThanOrEqual(32));
+  });
+});
+
+describe("ukuran huruf struk pelanggan", () => {
+  const text = buildReceipt(order, items, store);
+
+  it("judul toko tetap besar, isi struk huruf 2x tinggi, di akhir kembali normal", () => {
+    expect(text.indexOf(CMD.bigOn)).toBeLessThan(text.indexOf(CMD.tallOn));
+    expect(text.indexOf(CMD.tallOn)).toBeLessThan(text.indexOf("TP-261101-007"));
+    expect(text.trimEnd().endsWith(CMD.sizeNormal)).toBe(true);
+  });
+});
+
+describe("buildKitchenTicket", () => {
+  const text = buildKitchenTicket(order, items, store);
+  const plain = visible(text);
+
+  it("berisi nomor antrean, tipe pesanan, menu, varian/topping, catatan", () => {
+    for (const s of ["DAPUR #007", "Dine-in - Meja 5", "Pelanggan: Budi", "2x Sirloin Steak", "- Medium", "- Keju", "Catatan: Tanpa bawang", "Total item"]) {
+      expect(plain).toContain(s);
+    }
+  });
+
+  it("tanpa harga dan muat di kertas 58mm", () => {
+    expect(plain).not.toContain("Rp");
+    plain.split("\n").forEach((l) => expect(l.length).toBeLessThanOrEqual(32));
+  });
+
+  it("perintah tebal selalu dimatikan lagi", () => {
+    expect(text.split(CMD.boldOn).length).toBe(text.split(CMD.boldOff).length);
   });
 });

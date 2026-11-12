@@ -38,7 +38,9 @@ Dikelola oleh Owner. Kasir hanya bisa menandai tersedia/habis.
 ## 4. Struk (prioritas: MVP, dikerjakan setelah pindah ke development build) ✅
 - Printer thermal **Bluetooth & USB** (USB hanya Android), kertas **58mm & 80mm** (pilih di Setting)
 - Isi struk: logo, nama & alamat toko, nomor struk, tanggal & jam, tipe pesanan, nomor meja, item, subtotal, pajak, total, metode bayar, footer bisa diubah
-- **1 template struk saja** (tidak ada tiket dapur terpisah). Kasir bacakan pesanan atau berikan struk ke dapur.
+- Isi struk (selain judul nama toko) memakai huruf **2x tinggi** supaya mudah dibaca; lebar huruf tetap normal (58 mm = 32 huruf per baris).
+- **Struk dapur (opsional)**: di **Setting > Printer** pilih "Pelanggan saja" atau "Pelanggan + Dapur" (disimpan per device). Kalau "Pelanggan + Dapur", setelah struk pelanggan tercetak struk dapur: nomor antrean besar (DAPUR #014), tipe pesanan/meja, nama pelanggan, menu + varian/topping + catatan, **tanpa harga**. Order dibatalkan tidak dicetak ke dapur. Printer yang dipakai sama.
+- Printer: **Bluetooth** atau **USB (kabel OTG)**.
 - **Cetak ulang** struk dari halaman Order (riwayat)
 - Cetak berjalan **otomatis** setelah Lunas, tanpa pilihan otomatis/manual di Setting
 - Setelah Lunas muncul layar **Order Selesai**: ikon centang di atas, teks di bawahnya, satu tombol **Order Baru** (kembali ke halaman menu, keranjang kosong)

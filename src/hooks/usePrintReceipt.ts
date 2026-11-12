@@ -1,7 +1,7 @@
 import { useCallback, useState } from "react";
 import { useStoreSettings } from "@/hooks/useStoreSettings";
-import { getSavedPrinter, isPrinterSupported, printText } from "@/lib/printer/printer";
-import { buildReceipt } from "@/lib/printer/receipt";
+import { getPrintCopies, getSavedPrinter, isPrinterSupported, printText } from "@/lib/printer/printer";
+import { buildKitchenTicket, buildReceipt } from "@/lib/printer/receipt";
 import { getSupabase } from "@/lib/supabase";
 import type { Order, OrderItem } from "@/types/database";
 
@@ -23,6 +23,8 @@ async function fetchItems(orderId: string): Promise<OrderItem[]> {
 
 /**
  * Cetak struk 1 order ke printer yang dipilih di Setting > Printer.
+ * Kalau di Setting > Printer dipilih "Pelanggan + Dapur", struk dapur (tanpa harga) ikut dicetak
+ * setelah struk pelanggan. Order yang dibatalkan tidak dicetak ke dapur.
  *
  *   const receipt = usePrintReceipt();
  *   receipt.print(order, items, { auto: true })   // setelah Lunas
@@ -50,6 +52,9 @@ export function usePrintReceipt() {
         if (!settings) throw new Error("Pengaturan toko belum termuat. Cek koneksi internet.");
         const lines = items ?? (await fetchItems(order.id));
         await printText(buildReceipt(order, lines, settings));
+        if (order.status !== "cancelled" && (await getPrintCopies()) === "customer_kitchen") {
+          await printText(buildKitchenTicket(order, lines, settings));
+        }
         setStatus("done");
         return null;
       } catch (e) {

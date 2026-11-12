@@ -14,7 +14,10 @@ import {
   listPairedPrinters,
   openBluetoothSettings,
   printText,
+  getPrintCopies,
+  savePrintCopies,
   savePrinter,
+  type PrintCopies,
   type SavedPrinter,
 } from "@/lib/printer/printer";
 import { ensureUsbPermission, isUsbSupported, listUsbPrinters, type UsbPrinterInfo } from "@/lib/printer/usb";
@@ -52,6 +55,16 @@ export function PrinterModal({
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
   const [testing, setTesting] = useState(false);
+  const [copies, setCopies] = useState<PrintCopies>("customer");
+
+  useEffect(() => {
+    if (visible) getPrintCopies().then(setCopies);
+  }, [visible]);
+
+  function chooseCopies(next: PrintCopies) {
+    setCopies(next);
+    savePrintCopies(next).catch(() => undefined);
+  }
 
   // Saat dibuka, langsung tampilkan tab sesuai printer yang tersimpan
   useEffect(() => {
@@ -172,6 +185,17 @@ export function PrinterModal({
           Printer dipakai: {saved.name} ({saved.transport === "usb" ? "USB" : "Bluetooth"})
         </AppText>
       ) : null}
+
+      <AppText className="mb-2 text-sm">Yang dicetak tiap order</AppText>
+      <View className="mb-1 flex-row flex-wrap gap-2">
+        <Chip label="Pelanggan saja" active={copies === "customer"} onPress={() => chooseCopies("customer")} />
+        <Chip label="Pelanggan + Dapur" active={copies === "customer_kitchen"} onPress={() => chooseCopies("customer_kitchen")} />
+      </View>
+      <AppText variant="muted" className="mb-4 text-xs">
+        {copies === "customer_kitchen"
+          ? "Setelah struk pelanggan, tercetak struk dapur (tanpa harga, nomor antrean besar) untuk disobek ke dapur."
+          : "Hanya struk pelanggan yang dicetak."}
+      </AppText>
 
       <View className="mb-3 flex-row items-center justify-between">
         <AppText className="text-sm">{mode === "usb" ? "Printer USB yang tercolok" : "Printer yang sudah di-pair"}</AppText>

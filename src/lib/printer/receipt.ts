@@ -31,12 +31,13 @@ function typeLine(order: Order): string {
 }
 
 /**
- * Struk 1 order, sesuai docs: 1 struk per order (dipakai pelanggan & dapur).
- * Hasilnya teks + perintah ESC/POS, tinggal dikirim ke printText().
+ * Struk pelanggan 1 order. Hasilnya teks + perintah ESC/POS, tinggal dikirim ke printText().
+ * Isi struk (selain judul toko) memakai huruf 2x tinggi supaya mudah dibaca,
+ * lebarnya tetap normal sehingga jumlah huruf per baris tidak berubah.
  */
 export function buildReceipt(order: Order, items: OrderItem[], store: ReceiptStore): string {
   const width = charsPerLine(store.paper_size);
-  const out: string[] = [...header(store, width), divider(width)];
+  const out: string[] = [...header(store, width), CMD.tallOn, divider(width)];
 
   out.push(...row(order.order_number, formatDateTime(order.created_at).replace(",", ""), width));
   out.push(`${CMD.boldOn}${typeLine(order)}${CMD.boldOff}`);
@@ -60,7 +61,7 @@ export function buildReceipt(order: Order, items: OrderItem[], store: ReceiptSto
   }
   if (order.service_amount > 0) out.push(...row("Service", formatRupiah(order.service_amount), width));
   if (order.tax_amount > 0) out.push(...row("Pajak", formatRupiah(order.tax_amount), width));
-  out.push(`${CMD.tallOn}${CMD.boldOn}${row("TOTAL", formatRupiah(order.total), width).join("\n")}${CMD.boldOff}${CMD.sizeNormal}`);
+  out.push(`${CMD.boldOn}${row("TOTAL", formatRupiah(order.total), width).join("\n")}${CMD.boldOff}`);
   out.push(...row("Bayar", PAYMENT_METHOD_LABEL[order.payment_method], width));
 
   if (order.status === "cancelled") {
@@ -71,6 +72,38 @@ export function buildReceipt(order: Order, items: OrderItem[], store: ReceiptSto
   if (store.receipt_footer?.trim()) {
     out.push(CMD.alignCenter, ...wrap(store.receipt_footer, width), CMD.alignLeft);
   }
+  out.push(CMD.sizeNormal);
+  return joinLines(out);
+}
+
+/**
+ * Struk dapur: tanpa harga, nomor antrean besar, daftar menu + varian/topping + catatan.
+ * Dicetak setelah struk pelanggan kalau di Setting > Printer dipilih "Pelanggan + Dapur".
+ */
+export function buildKitchenTicket(order: Order, items: OrderItem[], store: Pick<ReceiptStore, "paper_size">): string {
+  const width = charsPerLine(store.paper_size);
+  const out: string[] = [
+    CMD.alignCenter,
+    `${CMD.bigOn}${CMD.boldOn}DAPUR #${String(order.daily_seq).padStart(3, "0")}${CMD.boldOff}`,
+    CMD.tallOn,
+    CMD.alignLeft,
+    divider(width),
+  ];
+
+  out.push(...row(order.order_number, formatDateTime(order.created_at).replace(",", ""), width));
+  out.push(`${CMD.boldOn}${typeLine(order)}${CMD.boldOff}`);
+  const customer = order.member_name ?? order.customer_name;
+  if (customer) out.push(...wrap(`Pelanggan: ${customer}`, width));
+  out.push(divider(width));
+
+  for (const item of items) {
+    for (const line of wrap(`${item.qty}x ${item.name}`, width)) out.push(`${CMD.boldOn}${line}${CMD.boldOff}`);
+    for (const option of item.options ?? []) out.push(...wrap(`  - ${option.name}`, width));
+    if (item.note) out.push(...wrap(`  Catatan: ${item.note}`, width));
+  }
+  out.push(divider(width));
+  out.push(...row("Total item", String(items.reduce((s, i) => s + i.qty, 0)), width));
+  out.push(CMD.sizeNormal);
   return joinLines(out);
 }
 
@@ -101,10 +134,10 @@ export function buildTestPage(store: Pick<ReceiptStore, "name">, paper: PaperSiz
 }
 
 /**
- * Gabung baris. Perintah murni (align) tidak boleh menambah baris kosong,
+ * Gabung baris. Perintah murni (rata & ukuran huruf) tidak boleh menambah baris kosong,
  * jadi ditempel ke awal baris berikutnya.
  */
-const ALIGN_COMMANDS: string[] = [CMD.alignLeft, CMD.alignCenter, CMD.alignRight];
+const ALIGN_COMMANDS: string[] = [CMD.alignLeft, CMD.alignCenter, CMD.alignRight, CMD.tallOn, CMD.sizeNormal];
 
 export function joinLines(lines: string[]): string {
   let text = "";

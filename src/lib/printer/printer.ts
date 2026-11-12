@@ -27,6 +27,23 @@ export type SavedPrinter = {
 };
 
 const STORAGE_KEY = "temanpos.printer";
+const COPIES_KEY = "temanpos.printCopies";
+
+/** Yang dicetak tiap order: struk pelanggan saja, atau struk pelanggan + struk dapur. */
+export type PrintCopies = "customer" | "customer_kitchen";
+
+/** Pilihan cetak di device ini (default: pelanggan saja). */
+export async function getPrintCopies(): Promise<PrintCopies> {
+  try {
+    return (await AsyncStorage.getItem(COPIES_KEY)) === "customer_kitchen" ? "customer_kitchen" : "customer";
+  } catch {
+    return "customer";
+  }
+}
+
+export async function savePrintCopies(copies: PrintCopies): Promise<void> {
+  await AsyncStorage.setItem(COPIES_KEY, copies);
+}
 
 type EscPosModule = typeof import("rn-escpos-printer").EscPosPrinter;
 let cached: EscPosModule | null | undefined;

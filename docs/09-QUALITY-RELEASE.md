@@ -35,7 +35,9 @@ Unit test perhitungan harga, update OTA, dan tanpa lisensi: ✅ disetujui.
   - Perubahan kode JS (tampilan, bug logika) → kirim tanpa install ulang APK:
     `eas update --channel preview --platform android --message "isi perubahan"`
     Di HP: tutup app sampai benar-benar keluar, buka lagi (update diunduh, tampil di pembukaan berikutnya).
+  - Di aplikasi: **Setting > Perbarui Aplikasi** langsung mengecek, mengunduh, dan memasang update tanpa menutup app manual (tombol Cek Pembaruan > Unduh > Mulai Ulang & Pasang). Hanya aktif di APK build `preview` / `production`.
   - Perubahan native (library native baru, ikon, splash, izin, `app.json`) → **naikkan `version` di `app.json`** (misal `1.0.0` → `1.1.0`), lalu build APK baru. `runtimeVersion` mengikuti versi app, jadi APK lama tidak menerima update yang butuh library baru (mencegah app crash).
+  - **Printer USB (OTG)** memakai modul native sendiri di `modules/usb-printer`. Perubahan di folder itu (atau menambah modul native lain) wajib naik `version` + build APK baru; update OTA tidak bisa membawanya.
   - Selalu pakai `--platform android` (project tidak punya versi web).
 
 ## F. Dokumentasi

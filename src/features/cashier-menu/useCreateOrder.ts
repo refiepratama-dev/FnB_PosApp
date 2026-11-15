@@ -30,7 +30,9 @@ export function useCreateOrder() {
           table_number: cart.orderType === "dine_in" ? cart.tableNumber : null,
           customer_name: cart.customerName,
           member_id: cart.member?.id ?? null,
-          discount_percent: cart.discountPercent,
+          // diskon persen -> discount_percent, diskon Rupiah -> discount_amount (dihitung ulang di database)
+          discount_percent: cart.discount.type === "percent" ? cart.discount.value : 0,
+          discount_amount: cart.discount.type === "amount" ? cart.discount.value : 0,
           payment_method: isOjol ? "ojol" : paymentMethod,
           created_by_mode: mode ?? "cashier",
         },

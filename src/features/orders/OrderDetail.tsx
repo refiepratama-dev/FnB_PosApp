@@ -5,6 +5,7 @@ import { Button } from "@/components/Button";
 import { OJOL_CASH_SOURCE_LABEL, PAYMENT_METHOD_LABEL } from "@/constants/labels";
 import { usePrintReceipt } from "@/hooks/usePrintReceipt";
 import { formatDateTime, formatRupiah } from "@/lib/format";
+import { discountLabel } from "@/lib/pricing";
 import type { OrderWithItems } from "@/types/database";
 import { orderTypeText } from "./orderLabels";
 
@@ -108,7 +109,7 @@ export function OrderDetail({ order, onCancel }: { order: OrderWithItems; onCanc
 
         <View className="mt-3 gap-1">
           <MoneyRow label="Subtotal" value={order.subtotal} />
-          {order.discount_amount ? <MoneyRow label={`Diskon ${Number(order.discount_percent)}%`} value={order.discount_amount} minus /> : null}
+          {order.discount_amount ? <MoneyRow label={discountLabel(order.discount_percent)} value={order.discount_amount} minus /> : null}
           {order.service_amount ? <MoneyRow label="Service" value={order.service_amount} /> : null}
           {order.tax_amount ? <MoneyRow label="Pajak" value={order.tax_amount} /> : null}
           <View className="mt-1 border-t border-line pt-2">

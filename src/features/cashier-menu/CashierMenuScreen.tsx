@@ -57,7 +57,7 @@ export default function CashierMenuScreen() {
 
   const totals = calcOrderTotals(
     cart.lines.map((l) => ({ unitPrice: unitPriceOf(l), qty: l.qty })),
-    cart.discountPercent,
+    cart.discount,
     settings ?? { tax_enabled: false, tax_percent: 0, service_enabled: false, service_percent: 0 },
   );
 
@@ -190,10 +190,11 @@ export default function CashierMenuScreen() {
 
       {modal === "discount" ? (
         <DiscountModal
-          value={cart.discountPercent}
+          value={cart.discount}
+          subtotal={totals.subtotal}
           onClose={() => setModal(null)}
-          onSave={(p) => {
-            cart.setDiscount(p);
+          onSave={(d) => {
+            cart.setDiscount(d);
             setModal(null);
           }}
         />

@@ -1,5 +1,5 @@
 import { create } from "zustand";
-import { itemUnitPrice, ojolUnitPrice, type SelectedOption } from "@/lib/pricing";
+import { itemUnitPrice, NO_DISCOUNT, ojolUnitPrice, type Discount, type SelectedOption } from "@/lib/pricing";
 import type { MenuItem, OjolProvider, OrderType, StoreSettings } from "@/types/database";
 
 export type CartLine = {
@@ -22,7 +22,7 @@ type CartState = {
   tableNumber: string;
   customerName: string;
   member: { id: string; name: string } | null;
-  discountPercent: number;
+  discount: Discount;
 
   addItem: (item: MenuItem, options?: SelectedOption[], note?: string, qty?: number) => boolean;
   changeQty: (key: string, delta: number) => void;
@@ -31,7 +31,7 @@ type CartState = {
   setField: (field: "ojolRef" | "tableNumber" | "customerName", value: string) => void;
   setOjolProvider: (provider: OjolProvider) => void;
   setMember: (member: { id: string; name: string } | null) => void;
-  setDiscount: (percent: number) => void;
+  setDiscount: (discount: Discount) => void;
   reset: () => void;
 };
 
@@ -43,7 +43,7 @@ const initial = {
   tableNumber: "",
   customerName: "",
   member: null,
-  discountPercent: 0,
+  discount: NO_DISCOUNT,
 };
 
 function lineKey(menuItemId: string, options: SelectedOption[], note: string) {
@@ -125,6 +125,12 @@ export const useCart = create<CartState>((set, get) => ({
           ? ""
           : state.customerName,
     })),
-  setDiscount: (discountPercent) => set({ discountPercent: Math.min(100, Math.max(0, discountPercent)) }),
+  setDiscount: (discount) =>
+    set({
+      discount: {
+        type: discount.type,
+        value: discount.type === "percent" ? Math.min(100, Math.max(0, discount.value)) : Math.max(0, Math.round(discount.value)),
+      },
+    }),
   reset: () => set({ ...initial, orderType: get().orderType }), // tipe order terakhir dipertahankan
 }));

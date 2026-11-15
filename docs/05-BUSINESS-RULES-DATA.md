@@ -15,7 +15,7 @@ Pembulatan dilakukan **per item (harga satuan)** sebelum dikali jumlah **(usulan
 
 ### Total order (urutan)
 1. **Subtotal** = jumlah semua total item
-2. **Diskon** = subtotal × persen diskon (0–100%)
+2. **Diskon** = subtotal × persen diskon (0–100%), **atau** potongan Rupiah tetap (maks = subtotal). Diskon Rupiah disimpan dengan `discount_percent = 0`
 3. **Service** = (subtotal − diskon) × persen service *(kalau aktif)*
 4. **Pajak** = (subtotal − diskon + service) × persen pajak *(kalau aktif)*
 5. **Total** = subtotal − diskon + service + pajak

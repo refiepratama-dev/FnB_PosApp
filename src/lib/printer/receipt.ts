@@ -1,5 +1,6 @@
 import { OJOL_PROVIDER_LABEL, ORDER_TYPE_LABEL, PAYMENT_METHOD_LABEL } from "@/constants/labels";
 import { formatDateTime, formatRupiah } from "@/lib/format";
+import { discountLabel } from "@/lib/pricing";
 import type { Order, OrderItem, StoreSettings } from "@/types/database";
 import { CMD, center, charsPerLine, divider, row, wrap, type PaperSize } from "./escpos";
 
@@ -57,7 +58,7 @@ export function buildReceipt(order: Order, items: OrderItem[], store: ReceiptSto
 
   out.push(...row("Subtotal", formatRupiah(order.subtotal), width));
   if (order.discount_amount > 0) {
-    out.push(...row(`Diskon ${Number(order.discount_percent)}%`, `-${formatRupiah(order.discount_amount)}`, width));
+    out.push(...row(discountLabel(order.discount_percent), `-${formatRupiah(order.discount_amount)}`, width));
   }
   if (order.service_amount > 0) out.push(...row("Service", formatRupiah(order.service_amount), width));
   if (order.tax_amount > 0) out.push(...row("Pajak", formatRupiah(order.tax_amount), width));

@@ -41,6 +41,26 @@ export type TaxSettings = {
   service_percent: number;
 };
 
+/** Diskon per transaksi: persen dari subtotal, atau potongan Rupiah tetap. */
+export type Discount = { type: "percent" | "amount"; value: number };
+
+export const NO_DISCOUNT: Discount = { type: "percent", value: 0 };
+
+/** Nominal diskon dari subtotal. Rupiah tidak boleh melebihi subtotal. */
+export function discountAmountOf(subtotal: number, discount: Discount): number {
+  if (discount.value <= 0) return 0;
+  if (discount.type === "amount") return Math.min(subtotal, Math.round(discount.value));
+  return roundRupiah((subtotal * Math.min(100, discount.value)) / 100);
+}
+
+/**
+ * Label diskon untuk ringkasan, detail order, dan struk:
+ * "Diskon 10%" (persen) atau "Diskon" (potongan Rupiah, nominalnya ditulis di kolom harga).
+ */
+export function discountLabel(percent: number): string {
+  return Number(percent) > 0 ? `Diskon ${Number(percent)}%` : "Diskon";
+}
+
 export type OrderTotals = {
   subtotal: number;
   discountAmount: number;
@@ -52,14 +72,15 @@ export type OrderTotals = {
 /**
  * Urutan: subtotal -> diskon -> service -> pajak.
  * lines = [{ unitPrice, qty }]
+ * discount: angka = persen (cara lama), atau { type: "percent" | "amount", value }.
  */
 export function calcOrderTotals(
   lines: { unitPrice: number; qty: number }[],
-  discountPercent: number,
+  discount: Discount | number,
   settings: TaxSettings,
 ): OrderTotals {
   const subtotal = lines.reduce((sum, l) => sum + l.unitPrice * l.qty, 0);
-  const discountAmount = roundRupiah((subtotal * discountPercent) / 100);
+  const discountAmount = discountAmountOf(subtotal, typeof discount === "number" ? { type: "percent", value: discount } : discount);
   const afterDiscount = subtotal - discountAmount;
   const serviceAmount = settings.service_enabled ? roundRupiah((afterDiscount * settings.service_percent) / 100) : 0;
   const taxAmount = settings.tax_enabled

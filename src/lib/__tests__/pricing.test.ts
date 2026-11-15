@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { calcOrderTotals, itemUnitPrice, ojolUnitPrice, roundUpTo500 } from "../pricing";
+import { calcOrderTotals, discountLabel, itemUnitPrice, ojolUnitPrice, roundUpTo500 } from "../pricing";
 
 const noTax = { tax_enabled: false, tax_percent: 10, service_enabled: false, service_percent: 5 };
 
@@ -58,5 +58,32 @@ describe("calcOrderTotals (sama dengan create_order di database)", () => {
   it("pembulatan 0,5 ke atas seperti PostgreSQL", () => {
     // 12345 x 10% = 1234.5 -> 1235
     expect(calcOrderTotals([{ unitPrice: 12345, qty: 1 }], 10, noTax).discountAmount).toBe(1235);
+  });
+});
+
+describe("diskon Rupiah", () => {
+  const noTax = { tax_enabled: false, tax_percent: 0, service_enabled: false, service_percent: 0 };
+  const withTax = { tax_enabled: true, tax_percent: 10, service_enabled: true, service_percent: 5 };
+
+  it("potongan Rupiah tetap, pajak & service dihitung setelah diskon", () => {
+    const t = calcOrderTotals([{ unitPrice: 50000, qty: 2 }], { type: "amount", value: 10000 }, withTax);
+    expect(t).toEqual({ subtotal: 100000, discountAmount: 10000, serviceAmount: 4500, taxAmount: 9450, total: 103950 });
+  });
+
+  it("tidak boleh melebihi subtotal", () => {
+    expect(calcOrderTotals([{ unitPrice: 8000, qty: 1 }], { type: "amount", value: 20000 }, noTax)).toMatchObject({
+      discountAmount: 8000,
+      total: 0,
+    });
+  });
+
+  it("persen lewat objek sama dengan angka (cara lama)", () => {
+    const lines = [{ unitPrice: 12345, qty: 1 }];
+    expect(calcOrderTotals(lines, { type: "percent", value: 10 }, noTax)).toEqual(calcOrderTotals(lines, 10, noTax));
+  });
+
+  it("label diskon", () => {
+    expect(discountLabel(10)).toBe("Diskon 10%");
+    expect(discountLabel(0)).toBe("Diskon");
   });
 });

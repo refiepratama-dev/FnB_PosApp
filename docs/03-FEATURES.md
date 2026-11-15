@@ -75,7 +75,7 @@ Tidak ada buka/tutup shift, modal awal, atau hitung selisih kas.
 - Poin/diskon member, hubungi via WA → **fase 2**
 
 ## 10. Diskon & Pajak (prioritas: MVP) ✅
-- **Diskon per transaksi, dalam persen**, diinput kasir di ringkasan order
+- **Diskon per transaksi, dalam persen (%) atau Rupiah (Rp)**, diinput kasir di ringkasan order. Pilihan cepat 5–50% atau Rp2.000 / Rp5.000 / Rp10.000 / Rp20.000, bisa juga diketik sendiri. Diskon Rupiah maksimal sebesar subtotal. Di struk tertulis "Diskon 10%" atau "Diskon" + nominalnya.
 - Diskon per item, promo otomatis, voucher → **fase 2**
 - **Pajak (PB1)** & **service charge**: on/off + persen di Setting, default **mati**
 - Harga menu belum termasuk pajak. Urutan: subtotal − diskon → + service → + pajak

@@ -30,7 +30,11 @@ Buka **SQL Editor** → **New query**, lalu jalankan **semua** file di
 3. `20261102000000_realtime_expenses.sql`
 4. `20261102000001_optional_table_number.sql`
 5. `20261104000000_menu_description.sql`
-6. (file migration baru lainnya, kalau ada)
+6. `20261105000000_petty_cash.sql`
+7. `20261105000001_petty_cash_profit.sql`
+8. `20261105000002_petty_cash_replenishment.sql`
+9. `20261115000000_discount_rupiah.sql`
+10. (file migration baru lainnya, kalau ada)
 
 Setiap file: salin semua isinya → tempel → **Run** → pastikan muncul *Success*.
 

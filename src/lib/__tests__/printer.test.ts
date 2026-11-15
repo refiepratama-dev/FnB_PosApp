@@ -110,6 +110,13 @@ describe("buildReceipt", () => {
     expect(plain).not.toContain("Service");
   });
 
+  it("diskon Rupiah tertulis tanpa persen", () => {
+    const plain = visible(buildReceipt({ ...order, discount_percent: 0, discount_amount: 5000 }, items, store));
+    expect(plain).toContain("Diskon");
+    expect(plain).toContain("-Rp5.000");
+    expect(plain).not.toContain("Diskon 0%");
+  });
+
   it("order ojol menampilkan provider & nomor order ojol", () => {
     const plain = visible(
       buildReceipt({ ...order, order_type: "ojol", ojol_provider: "gofood", ojol_order_ref: "F-123", table_number: null }, items, store),

@@ -6,6 +6,7 @@ import { colors } from "@/constants/colors";
 import { OJOL_PROVIDER_LABEL, ORDER_TYPE_LABEL } from "@/constants/labels";
 import { formatRupiah } from "@/lib/format";
 import type { OrderTotals } from "@/lib/pricing";
+import { discountLabel } from "@/lib/pricing";
 import type { OjolProvider, OrderType } from "@/types/database";
 import { useCart, type CartLine } from "./cartStore";
 
@@ -227,16 +228,20 @@ export function OrderPanel({
       {/* Total & tombol bayar */}
       <View className="gap-2 border-t border-line p-4">
         <Pressable onPress={onDiscount} className="flex-row items-center gap-2 self-start rounded-full bg-panel px-3 py-1.5 active:bg-line">
-          <Percent size={14} color={cart.discountPercent ? colors.accent : colors.ink} />
-          <AppText className={`text-xs ${cart.discountPercent ? "font-heading text-accent-ink" : ""}`}>
-            {cart.discountPercent ? `Diskon ${cart.discountPercent}%` : "Tambah diskon"}
+          <Percent size={14} color={cart.discount.value ? colors.accent : colors.ink} />
+          <AppText className={`text-xs ${cart.discount.value ? "font-heading text-accent-ink" : ""}`}>
+            {!cart.discount.value
+              ? "Tambah diskon"
+              : cart.discount.type === "percent"
+                ? `Diskon ${cart.discount.value}%`
+                : `Diskon ${formatRupiah(cart.discount.value)}`}
           </AppText>
         </Pressable>
 
         {!compact ? (
           <>
             <TotalRow label="Subtotal" value={totals.subtotal} />
-            {totals.discountAmount ? <TotalRow label={`Diskon ${cart.discountPercent}%`} value={totals.discountAmount} minus /> : null}
+            {totals.discountAmount ? <TotalRow label={discountLabel(cart.discount.type === "percent" ? cart.discount.value : 0)} value={totals.discountAmount} minus /> : null}
             {totals.serviceAmount ? <TotalRow label={serviceLabel} value={totals.serviceAmount} /> : null}
             {totals.taxAmount ? <TotalRow label={taxLabel} value={totals.taxAmount} /> : null}
           </>

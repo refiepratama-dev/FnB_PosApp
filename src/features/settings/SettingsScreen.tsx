@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { Alert, View } from "react-native";
 import { router } from "expo-router";
-import { Bike, Percent, Printer, QrCode, ReceiptText, ShieldCheck, UtensilsCrossed } from "lucide-react-native";
+import { Bike, Percent, Printer, QrCode, ReceiptText, RefreshCw, ShieldCheck, UtensilsCrossed } from "lucide-react-native";
 import { ScreenHeader } from "@/components/ScreenHeader";
 import { SettingsList, type SettingItem } from "@/components/SettingsList";
 import { useStoreSettings } from "@/hooks/useStoreSettings";
@@ -12,12 +12,13 @@ import { PrinterModal } from "./PrinterModal";
 import { ReceiptModal } from "./ReceiptModal";
 import { StoreQrModal } from "./StoreQrModal";
 import { TaxServiceModal } from "./TaxServiceModal";
+import { UpdateModal } from "./UpdateModal";
 
-type Panel = "tax" | "ojol" | "receipt" | "printer" | "pin" | "qr" | null;
+type Panel = "tax" | "ojol" | "receipt" | "printer" | "pin" | "qr" | "update" | null;
 
 /**
  * Setting (sama untuk Owner & Kasir): pajak & service, persen harga ojol, struk & kertas, printer,
- * kelola produk, ubah PIN, QR toko, logout.
+ * kelola produk, ubah PIN, QR toko, perbarui aplikasi (OTA), logout.
  * Menu bertanda ownerOnly (Kelola Produk, Ubah PIN, QR Toko) tetap tampil di mode Kasir,
  * tapi minta PIN owner dulu saat ditap (diurus oleh SettingsList).
  * Penanggung jawab: Fahri (lihat docs/CODING-GUIDE.md)
@@ -51,6 +52,7 @@ export default function SettingsScreen() {
     },
     { label: "Ubah PIN", icon: ShieldCheck, ownerOnly: true, onPress: () => setPanel("pin") },
     { label: "QR Toko", icon: QrCode, ownerOnly: true, onPress: () => setPanel("qr") },
+    { label: "Perbarui Aplikasi", icon: RefreshCw, onPress: () => setPanel("update") },
   ];
 
   const close = () => setPanel(null);
@@ -70,6 +72,7 @@ export default function SettingsScreen() {
       ) : null}
       <ChangePinModal visible={panel === "pin"} onClose={close} />
       <StoreQrModal visible={panel === "qr"} onClose={close} />
+      <UpdateModal visible={panel === "update"} onClose={close} />
     </View>
   );
 }
